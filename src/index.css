@@ -70,12 +70,13 @@ h2{color:var(--muted);font-size:26px}
 }
 .app-frame{display:flex;flex-direction:column;height:100vh}
 .content-frame{display:flex;flex:1;min-height:0}
-.top-header{height:64px;background:rgba(255,255,255,0.7);backdrop-filter:blur(6px);border-bottom:1px solid rgba(18,52,31,0.04);box-shadow:0 6px 18px rgba(18,52,31,0.03);display:flex;align-items:center}
-.top-header .header-inner{display:flex;justify-content:space-between;align-items:center}
-.top-header .brand-small{display:flex;align-items:center;gap:12px}
-.top-header .brand-title{font-weight:700;color:var(--green-900);font-family:Merriweather, serif}
-.top-header .logo.small{width:44px;height:44px;object-fit:contain;border-radius:8px}
-.top-header .header-search input{width:360px;max-width:48vw;padding:8px 12px;border-radius:10px;border:1px solid rgba(18,52,31,0.06)}
-.top-header .header-actions{display:flex;align-items:center;gap:12px;margin-left:12px}
-.top-header .avatar{width:36px;height:36px;border-radius:999px;background:linear-gradient(135deg,#caa34d22,#caa34d11);display:flex;align-items:center;justify-content:center;color:var(--green-900);font-weight:700}
+.top-header{height:52px;background:var(--cream);border-bottom:2px solid var(--green-700);display:flex;align-items:center;padding:0 16px;box-shadow:0 2px 8px rgba(18,52,31,0.08)}
+.top-header .header-inner{display:flex;justify-content:space-between;align-items:center;width:100%;gap:20px}
+.top-header .header-logo{display:flex;align-items:center;gap:12px}
+.top-header .logo-img{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.1))}
+.top-header .strain-title{font-size:18px;font-weight:700;color:var(--green-900);font-family:Merriweather, serif;letter-spacing:-0.5px}
+.top-header .header-search-wrapper{flex:1;max-width:400px}
+.top-header .header-search{width:100%;padding:8px 14px;border-radius:8px;border:1.5px solid var(--green-700);background:white;font-size:14px;color:var(--muted);font-family:Inter, sans-serif;transition:all 0.2s ease;outline:none}
+.top-header .header-search:focus{border-color:var(--gold);background:#fafaf8;box-shadow:0 0 0 3px rgba(202,163,77,0.1)}
+.top-header .header-search::placeholder{color:rgba(107,107,107,0.5)}
 .main-content{flex:1;padding:28px;overflow:auto;min-height:0}

@@ -7,10 +7,8 @@ const BudNode = ({ node, x, y, size = 60 }) => {
   const color = mixFlavorColors(node.flavors);
   const radius = size / 2;
   
-  // Create a detailed bud shape using paths
   return (
-    <g transform={`translate(${x}, ${y})`}>
-      {/* Main bud body - organic shape */}
+    <g transform={`translate(${x}, ${y})`} key={node.id} className="bud-node">
       <defs>
         <filter id="budGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -65,19 +63,41 @@ const BudNode = ({ node, x, y, size = 60 }) => {
   );
 };
 
+// Curved arrow path with marker
+const CurvedPath = ({ x1, y1, x2, y2 }) => {
+  // Calculate control points for smooth curve
+  const midX = (x1 + x2) / 2;
+  const midY = (y1 + y2) / 2;
+  const offsetX = (y2 - y1) * 0.15;
+  const offsetY = (x1 - x2) * 0.15;
+  
+  const pathData = `M ${x1} ${y1} Q ${midX + offsetX} ${midY + offsetY} ${x2} ${y2}`;
+  
+  return (
+    <g key={`path-${x1}-${y1}-${x2}-${y2}`}>
+      <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+          <polygon points="0 0, 10 3, 0 6" fill="#1e5631" />
+        </marker>
+      </defs>
+      <path d={pathData} className="tree-connection" markerEnd="url(#arrowhead)" />
+    </g>
+  );
+};
+
 const FlavorTree = ({ strainData }) => {
   const [scale, setScale] = useState(1);
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  const svgRef = useRef(null);
   const containerRef = useRef(null);
+  const svgRef = useRef(null);
 
-  // Calculate tree layout with proper spacing
+  // Calculate tree layout - strain at bottom, parents above
   const getTreeLayout = (node, level = 0, siblingIndex = 0, siblingCount = 1) => {
-    const horizontalSpacing = 280;
-    const verticalSpacing = 180;
+    const horizontalSpacing = 300;
+    const verticalSpacing = 200;
     
     const parentKeys = Object.keys(node.parents || {});
     const childCount = Math.max(parentKeys.length, 1);
@@ -88,7 +108,7 @@ const FlavorTree = ({ strainData }) => {
       type: node.type,
       flavors: getStrainFlavors(node),
       x: (siblingIndex - (childCount - 1) / 2) * horizontalSpacing,
-      y: level * verticalSpacing,
+      y: -level * verticalSpacing, // Negative to go UP
       children: []
     };
 
@@ -109,9 +129,9 @@ const FlavorTree = ({ strainData }) => {
     let minX = node.x, maxX = node.x, minY = node.y, maxY = node.y;
     
     const traverse = (n) => {
-      minX = Math.min(minX, n.x - 80);
-      maxX = Math.max(maxX, n.x + 80);
-      minY = Math.min(minY, n.y - 80);
+      minX = Math.min(minX, n.x - 100);
+      maxX = Math.max(maxX, n.x + 100);
+      minY = Math.min(minY, n.y - 100);
       maxY = Math.max(maxY, n.y + 100);
       n.children?.forEach(child => traverse(child));
     };
@@ -123,7 +143,7 @@ const FlavorTree = ({ strainData }) => {
   const bounds = calculateBounds(treeLayout);
   const treeWidth = bounds.maxX - bounds.minX;
   const treeHeight = bounds.maxY - bounds.minY;
-  const padding = 100;
+  const padding = 150;
 
   // Flatten tree for rendering
   const { nodes: flatNodes, connections } = (() => {
@@ -147,44 +167,38 @@ const FlavorTree = ({ strainData }) => {
     return { nodes: n, connections: c };
   })();
 
-  // Mouse wheel zoom
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleWheel = (e) => {
-      e.preventDefault();
-      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-      setScale(prev => Math.max(0.5, Math.min(3, prev * zoomFactor)));
-    };
-
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    return () => container.removeEventListener('wheel', handleWheel);
-  }, []);
-
-  // Mouse drag pan
+  // Mouse/touch event handlers
   const handleMouseDown = (e) => {
     setIsDragging(true);
-    setDragStart({ x: e.clientX - panX, y: e.clientY - panY });
+    setDragStart({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
-    setPanX(e.clientX - dragStart.x);
-    setPanY(e.clientY - dragStart.y);
+    const dx = e.clientX - dragStart.x;
+    const dy = e.clientY - dragStart.y;
+    setPanX(prev => prev + dx);
+    setPanY(prev => prev + dy);
+    setDragStart({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
   };
 
-  // Touch controls
+  const handleWheel = (e) => {
+    e.preventDefault();
+    const zoomFactor = e.deltaY > 0 ? 0.85 : 1.15;
+    setScale(prev => Math.max(0.3, Math.min(4, prev * zoomFactor)));
+  };
+
+  // Touch handlers
   const [touchStart, setTouchStart] = useState(null);
   const [touchDistance, setTouchDistance] = useState(0);
 
   const handleTouchStart = (e) => {
     if (e.touches.length === 1) {
-      setTouchStart({ x: e.touches[0].clientX - panX, y: e.touches[0].clientY - panY });
+      setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
     } else if (e.touches.length === 2) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
@@ -194,14 +208,17 @@ const FlavorTree = ({ strainData }) => {
 
   const handleTouchMove = (e) => {
     if (e.touches.length === 1 && touchStart) {
-      setPanX(e.touches[0].clientX - touchStart.x);
-      setPanY(e.touches[0].clientY - touchStart.y);
+      const dx = e.touches[0].clientX - touchStart.x;
+      const dy = e.touches[0].clientY - touchStart.y;
+      setPanX(prev => prev + dx);
+      setPanY(prev => prev + dy);
+      setTouchStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
     } else if (e.touches.length === 2 && touchDistance > 0) {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const newDistance = Math.sqrt(dx * dx + dy * dy);
       const zoomFactor = newDistance / touchDistance;
-      setScale(prev => Math.max(0.5, Math.min(3, prev * zoomFactor)));
+      setScale(prev => Math.max(0.3, Math.min(4, prev * zoomFactor)));
       setTouchDistance(newDistance);
     }
   };
@@ -210,6 +227,13 @@ const FlavorTree = ({ strainData }) => {
     setTouchStart(null);
     setTouchDistance(0);
   };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, []);
 
   return (
     <div
@@ -222,6 +246,7 @@ const FlavorTree = ({ strainData }) => {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
     >
       <svg
         ref={svgRef}
@@ -231,19 +256,12 @@ const FlavorTree = ({ strainData }) => {
         style={{
           transform: `translate(${panX}px, ${panY}px) scale(${scale})`,
           transformOrigin: 'center',
-          cursor: isDragging ? 'grabbing' : 'grab'
+          willChange: 'transform'
         }}
       >
-        {/* Render connections */}
+        {/* Render curved connections with arrows */}
         {connections.map((conn, idx) => (
-          <line
-            key={`conn-${idx}`}
-            x1={conn.x1}
-            y1={conn.y1}
-            x2={conn.x2}
-            y2={conn.y2}
-            className="tree-connection"
-          />
+          <CurvedPath key={idx} x1={conn.x1} y1={conn.y1} x2={conn.x2} y2={conn.y2} />
         ))}
 
         {/* Render bud nodes */}
@@ -254,15 +272,15 @@ const FlavorTree = ({ strainData }) => {
 
       {/* Controls */}
       <div className="tree-controls">
-        <button onClick={() => setScale(s => Math.max(0.5, s - 0.1))}>−</button>
+        <button onClick={() => setScale(s => Math.max(0.3, s - 0.15))}>−</button>
         <span>{Math.round(scale * 100)}%</span>
-        <button onClick={() => setScale(s => Math.min(3, s + 0.1))}>+</button>
+        <button onClick={() => setScale(s => Math.min(4, s + 0.15))}>+</button>
         <button onClick={() => { setScale(1); setPanX(0); setPanY(0); }}>Reset</button>
       </div>
 
       {/* Instructions */}
       <div className="tree-instructions">
-        <p>🖱️ Drag to pan | 🔄 Scroll to zoom | 👆 Touch to pan/pinch to zoom</p>
+        <p>🖱️ Drag to pan | 🔄 Scroll to zoom | 👆 Touch: drag to pan, pinch to zoom</p>
       </div>
     </div>
   );

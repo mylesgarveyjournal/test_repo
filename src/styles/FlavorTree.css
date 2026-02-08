@@ -15,27 +15,44 @@
   width: 100%;
   height: 100%;
   display: block;
-  transition: transform 0.1s ease-out;
+  transition: transform 0.05s ease-out;
 }
 
-/* Tree connections (lines between parent/child) */
+/* Tree connections - smooth curved paths */
 .tree-connection {
   stroke: var(--green-700);
-  stroke-width: 2;
-  opacity: 0.5;
-  stroke-dasharray: 5, 5;
+  stroke-width: 2.5;
+  opacity: 0.6;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 0.2s ease, stroke-width 0.2s ease;
 }
 
-/* Strain node styling */
-.strain-node {
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
-  transition: filter 0.2s ease;
-  cursor: pointer;
+.tree-connection:hover {
+  opacity: 1;
+  stroke-width: 3.5;
 }
 
-.strain-node:hover {
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
-  stroke-width: 3;
+/* Arrow marker styling */
+marker {
+  overflow: visible;
+}
+
+/* Bud node styling */
+.bud-node {
+  transition: filter 0.15s ease, transform 0.15s ease;
+  transform-origin: center;
+}
+
+.bud-node:hover {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+  transform: scale(1.08);
+}
+
+.bud-node:hover .tree-connection {
+  opacity: 1;
+  stroke-width: 3.5;
 }
 
 /* Strain name text */
@@ -64,6 +81,17 @@
   font-size: 16px;
   text-anchor: middle;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  animation: bobbing 3s ease-in-out infinite;
+}
+
+/* Springy bobbing animation for flavor icons */
+@keyframes bobbing {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 /* Controls */
@@ -74,12 +102,13 @@
   display: flex;
   gap: 8px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid var(--green-700);
   backdrop-filter: blur(4px);
   z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tree-controls button {
@@ -94,12 +123,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-weight: 600;
 }
 
 .tree-controls button:hover {
   background: var(--green-900);
-  transform: scale(1.05);
+  transform: scale(1.12);
+  box-shadow: 0 4px 12px rgba(30, 86, 49, 0.3);
+}
+
+.tree-controls button:active {
+  transform: scale(0.95);
 }
 
 .tree-controls span {
@@ -125,18 +160,16 @@
   white-space: nowrap;
   backdrop-filter: blur(4px);
   z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .tree-instructions p {
   margin: 0;
+  font-weight: 500;
 }
 
 /* Mobile responsive */
 @media (max-width: 720px) {
-  .flavor-tree-container {
-    height: 400px;
-  }
-
   .tree-controls {
     top: 8px;
     right: 8px;
@@ -152,13 +185,19 @@
   .tree-instructions {
     font-size: 12px;
     padding: 6px 12px;
+    bottom: 8px;
+    right: 8px;
+    left: auto;
+    transform: none;
+    white-space: normal;
+    max-width: 200px;
   }
 
   .strain-name {
     font-size: 10px;
   }
 
-  .strain-node {
-    stroke-width: 1.5;
+  .tree-connection {
+    stroke-width: 2;
   }
 }
