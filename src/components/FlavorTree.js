@@ -2,6 +2,69 @@ import React, { useState, useRef, useEffect } from 'react';
 import { mixFlavorColors, getFlavorIcon, getStrainFlavors } from '../data/flavorProfile';
 import '../styles/FlavorTree.css';
 
+// Cannabis Bud Node Component
+const BudNode = ({ node, x, y, size = 60 }) => {
+  const color = mixFlavorColors(node.flavors);
+  const radius = size / 2;
+  
+  // Create a detailed bud shape using paths
+  return (
+    <g transform={`translate(${x}, ${y})`}>
+      {/* Main bud body - organic shape */}
+      <defs>
+        <filter id="budGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      
+      {/* Bud shape - organic cannabis flower look */}
+      <ellipse cx="0" cy="5" rx={radius * 0.9} ry={radius * 1.1} fill={color} opacity="0.95" filter="url(#budGlow)" stroke="#1e5631" strokeWidth="2"/>
+      
+      {/* Top bud pistil detail */}
+      <ellipse cx="-8" cy="-15" rx={radius * 0.4} ry={radius * 0.5} fill={color} opacity="0.8" stroke="#1e5631" strokeWidth="1.5"/>
+      <ellipse cx="8" cy="-12" rx={radius * 0.35} ry={radius * 0.45} fill={color} opacity="0.85" stroke="#1e5631" strokeWidth="1.5"/>
+      
+      {/* Sugar leaf highlights */}
+      <ellipse cx="-12" cy="5" rx={radius * 0.3} ry={radius * 0.6} fill={color} opacity="0.7" stroke="#1e5631" strokeWidth="1" transform="rotate(-25 -12 5)"/>
+      <ellipse cx="12" cy="8" rx={radius * 0.28} ry={radius * 0.55} fill={color} opacity="0.75" stroke="#1e5631" strokeWidth="1" transform="rotate(30 12 8)"/>
+      
+      {/* Center highlight for dimension */}
+      <ellipse cx="0" cy="0" rx={radius * 0.5} ry={radius * 0.7} fill="white" opacity="0.15"/>
+
+      {/* Strain name */}
+      <text x="0" y="28" textAnchor="middle" className="strain-name" fontSize="11">
+        {node.name}
+      </text>
+
+      {/* Type indicator */}
+      <text x="0" y="-22" textAnchor="middle" className="strain-type" fontSize="14">
+        {node.type === 'Landrace' ? '🌿' : '✕'}
+      </text>
+
+      {/* Flavor icons */}
+      <g className="flavor-icons">
+        {node.flavors.slice(0, 3).map((flavor, idx) => (
+          <text
+            key={`${node.id}-flavor-${idx}`}
+            x={-24 + idx * 24}
+            y="44"
+            textAnchor="middle"
+            className="flavor-icon"
+            fontSize="13"
+            title={flavor}
+          >
+            {getFlavorIcon(flavor)}
+          </text>
+        ))}
+      </g>
+    </g>
+  );
+};
+
 const FlavorTree = ({ strainData }) => {
   const [scale, setScale] = useState(1);
   const [panX, setPanX] = useState(0);
@@ -11,20 +74,20 @@ const FlavorTree = ({ strainData }) => {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Calculate tree layout
+  // Calculate tree layout with proper spacing
   const getTreeLayout = (node, level = 0, siblingIndex = 0, siblingCount = 1) => {
-    const horizontalSpacing = 250;
-    const verticalSpacing = 150;
+    const horizontalSpacing = 280;
+    const verticalSpacing = 180;
     
     const parentKeys = Object.keys(node.parents || {});
-    const childCount = parentKeys.length;
+    const childCount = Math.max(parentKeys.length, 1);
     
     const layout = {
       id: node.id,
       name: node.name,
       type: node.type,
       flavors: getStrainFlavors(node),
-      x: (siblingIndex - siblingCount / 2) * horizontalSpacing,
+      x: (siblingIndex - (childCount - 1) / 2) * horizontalSpacing,
       y: level * verticalSpacing,
       children: []
     };
@@ -41,27 +104,28 @@ const FlavorTree = ({ strainData }) => {
 
   const treeLayout = getTreeLayout(strainData, 0, 0, 1);
 
-  // Flatten tree for rendering
-  const flattenTree = (node, parentNode = null, connections = []) => {
-    const nodes = [node];
+  // Calculate tree bounds
+  const calculateBounds = (node) => {
+    let minX = node.x, maxX = node.x, minY = node.y, maxY = node.y;
     
-    if (parentNode) {
-      connections.push({
-        x1: parentNode.x,
-        y1: parentNode.y,
-        x2: node.x,
-        y2: node.y
-      });
-    }
-
-    node.children?.forEach(child => {
-      const childFlat = flattenTree(child, node, connections);
-      nodes.push(...childFlat);
-    });
-
-    return { nodes, connections };
+    const traverse = (n) => {
+      minX = Math.min(minX, n.x - 80);
+      maxX = Math.max(maxX, n.x + 80);
+      minY = Math.min(minY, n.y - 80);
+      maxY = Math.max(maxY, n.y + 100);
+      n.children?.forEach(child => traverse(child));
+    };
+    
+    traverse(node);
+    return { minX, maxX, minY, maxY };
   };
 
+  const bounds = calculateBounds(treeLayout);
+  const treeWidth = bounds.maxX - bounds.minX;
+  const treeHeight = bounds.maxY - bounds.minY;
+  const padding = 100;
+
+  // Flatten tree for rendering
   const { nodes: flatNodes, connections } = (() => {
     const n = [];
     const c = [];
@@ -162,6 +226,8 @@ const FlavorTree = ({ strainData }) => {
       <svg
         ref={svgRef}
         className="flavor-tree-svg"
+        viewBox={`${bounds.minX - padding} ${bounds.minY - padding} ${treeWidth + padding * 2} ${treeHeight + padding * 2}`}
+        preserveAspectRatio="xMidYMid meet"
         style={{
           transform: `translate(${panX}px, ${panY}px) scale(${scale})`,
           transformOrigin: 'center',
@@ -180,57 +246,9 @@ const FlavorTree = ({ strainData }) => {
           />
         ))}
 
-        {/* Render nodes */}
+        {/* Render bud nodes */}
         {flatNodes.map(node => (
-          <g key={node.id} transform={`translate(${node.x}, ${node.y})`}>
-            {/* Colored oval background */}
-            <ellipse
-              cx="0"
-              cy="0"
-              rx="50"
-              ry="45"
-              fill={mixFlavorColors(node.flavors)}
-              stroke="#1e5631"
-              strokeWidth="2"
-              className="strain-node"
-            />
-
-            {/* Strain name */}
-            <text
-              x="0"
-              y="-8"
-              textAnchor="middle"
-              className="strain-name"
-            >
-              {node.name}
-            </text>
-
-            {/* Type indicator */}
-            <text
-              x="0"
-              y="10"
-              textAnchor="middle"
-              className="strain-type"
-            >
-              {node.type === 'Landrace' ? '🌿' : '✕'}
-            </text>
-
-            {/* Flavor icons */}
-            <g className="flavor-icons">
-              {node.flavors.slice(0, 3).map((flavor, idx) => (
-                <text
-                  key={`${node.id}-flavor-${idx}`}
-                  x={-30 + idx * 30}
-                  y="35"
-                  textAnchor="middle"
-                  className="flavor-icon"
-                  title={flavor}
-                >
-                  {getFlavorIcon(flavor)}
-                </text>
-              ))}
-            </g>
-          </g>
+          <BudNode key={node.id} node={node} x={node.x} y={node.y} size={70} />
         ))}
       </svg>
 
