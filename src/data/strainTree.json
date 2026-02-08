@@ -86,58 +86,26 @@
             "thc": 17,
             "cbd": 0.3,
             "publicFlavors": ["Lemon", "Citrus", "Skunk"],
-            "notes": "Lemon Haze x Skunk #1",
+            "notes": "Skunk #1 x Lemon phenotype",
             "parents": {
-              "Lemon Haze": {
-                "id": "lemon_haze",
-                "name": "Lemon Haze",
-                "type": "Hybrid",
-                "thc": 16,
-                "cbd": 0.2,
-                "publicFlavors": ["Lemon", "Citrus", "Sweet"],
-                "notes": "Lemon Skunk x Haze",
-                "parents": {
-                  "Lemon": {
-                    "id": "lemon",
-                    "name": "Lemon",
-                    "type": "Landrace",
-                    "thc": 12,
-                    "cbd": 0.1,
-                    "publicFlavors": ["Lemon", "Citrus", "Fresh"],
-                    "notes": "Lemon phenotype",
-                    "parents": {}
-                  },
-                  "Haze": {
-                    "id": "haze",
-                    "name": "Haze",
-                    "type": "Hybrid",
-                    "thc": 15,
-                    "cbd": 0.1,
-                    "publicFlavors": ["Spicy", "Citrus", "Earthy"],
-                    "notes": "Thai x Mexican x Columbian x Indian",
-                    "parents": {
-                      "Thai": {
-                        "id": "thai",
-                        "name": "Thai",
-                        "type": "Landrace",
-                        "thc": 13,
-                        "cbd": 0.1,
-                        "publicFlavors": ["Spicy", "Pine", "Earthy"],
-                        "notes": "Thai landrace",
-                        "parents": {}
-                      }
-                    }
-                  }
-                }
-              },
-              "Skunk #1 (Lemon)": {
-                "id": "skunk_1_lemon",
+              "Skunk #1": {
+                "id": "skunk_1",
                 "name": "Skunk #1",
                 "type": "Hybrid",
                 "thc": 15,
                 "cbd": 0.2,
                 "publicFlavors": ["Skunk", "Earthy", "Pungent"],
                 "notes": "Afghan x Acapulco Gold x Colombian Gold",
+                "parents": {}
+              },
+              "Lemon": {
+                "id": "lemon_phenotype",
+                "name": "Lemon",
+                "type": "Phenotype",
+                "thc": 12,
+                "cbd": 0.1,
+                "publicFlavors": ["Lemon", "Citrus", "Fresh"],
+                "notes": "Lemon phenotype from citrus genetics",
                 "parents": {}
               }
             }
