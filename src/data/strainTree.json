@@ -1,0 +1,265 @@
+{
+  "Mimosa": {
+    "id": "mimosa",
+    "name": "Mimosa",
+    "type": "Hybrid",
+    "thc": 19,
+    "cbd": 0.5,
+    "publicFlavors": ["Orange", "Citrus", "Mango"],
+    "notes": "Sativa-leaning hybrid known for citrus and tropical notes",
+    "parents": {
+      "Clementine": {
+        "id": "clementine",
+        "name": "Clementine",
+        "type": "Hybrid",
+        "thc": 18,
+        "cbd": 0.3,
+        "publicFlavors": ["Orange", "Citrus", "Sweet"],
+        "notes": "Tangie x Lemon Skunk",
+        "parents": {
+          "Tangie": {
+            "id": "tangie",
+            "name": "Tangie",
+            "type": "Hybrid",
+            "thc": 19,
+            "cbd": 0.2,
+            "publicFlavors": ["Orange", "Tangerine", "Citrus"],
+            "notes": "California Orange x Skunk-1",
+            "parents": {
+              "California Orange": {
+                "id": "california_orange",
+                "name": "California Orange",
+                "type": "Landrace",
+                "thc": 16,
+                "cbd": 0.1,
+                "publicFlavors": ["Orange", "Sweet", "Citrus"],
+                "notes": "Classic landrace strain",
+                "parents": {}
+              },
+              "Skunk #1": {
+                "id": "skunk_1",
+                "name": "Skunk #1",
+                "type": "Hybrid",
+                "thc": 15,
+                "cbd": 0.2,
+                "publicFlavors": ["Skunk", "Earthy", "Pungent"],
+                "notes": "Afghan x Acapulco Gold x Colombian Gold",
+                "parents": {
+                  "Afghan": {
+                    "id": "afghan",
+                    "name": "Afghan",
+                    "type": "Landrace",
+                    "thc": 14,
+                    "cbd": 0.5,
+                    "publicFlavors": ["Earthy", "Pine", "Spicy"],
+                    "notes": "Classic landrace from Afghanistan",
+                    "parents": {}
+                  },
+                  "Acapulco Gold": {
+                    "id": "acapulco_gold",
+                    "name": "Acapulco Gold",
+                    "type": "Landrace",
+                    "thc": 15,
+                    "cbd": 0.1,
+                    "publicFlavors": ["Orange", "Sweet", "Spicy"],
+                    "notes": "Mexican landrace",
+                    "parents": {}
+                  },
+                  "Colombian Gold": {
+                    "id": "colombian_gold",
+                    "name": "Colombian Gold",
+                    "type": "Landrace",
+                    "thc": 14,
+                    "cbd": 0.2,
+                    "publicFlavors": ["Citrus", "Pine", "Sweet"],
+                    "notes": "Colombian landrace",
+                    "parents": {}
+                  }
+                }
+              }
+            }
+          },
+          "Lemon Skunk": {
+            "id": "lemon_skunk",
+            "name": "Lemon Skunk",
+            "type": "Hybrid",
+            "thc": 17,
+            "cbd": 0.3,
+            "publicFlavors": ["Lemon", "Citrus", "Skunk"],
+            "notes": "Lemon Haze x Skunk #1",
+            "parents": {
+              "Lemon Haze": {
+                "id": "lemon_haze",
+                "name": "Lemon Haze",
+                "type": "Hybrid",
+                "thc": 16,
+                "cbd": 0.2,
+                "publicFlavors": ["Lemon", "Citrus", "Sweet"],
+                "notes": "Lemon Skunk x Haze",
+                "parents": {
+                  "Lemon": {
+                    "id": "lemon",
+                    "name": "Lemon",
+                    "type": "Landrace",
+                    "thc": 12,
+                    "cbd": 0.1,
+                    "publicFlavors": ["Lemon", "Citrus", "Fresh"],
+                    "notes": "Lemon phenotype",
+                    "parents": {}
+                  },
+                  "Haze": {
+                    "id": "haze",
+                    "name": "Haze",
+                    "type": "Hybrid",
+                    "thc": 15,
+                    "cbd": 0.1,
+                    "publicFlavors": ["Spicy", "Citrus", "Earthy"],
+                    "notes": "Thai x Mexican x Columbian x Indian",
+                    "parents": {
+                      "Thai": {
+                        "id": "thai",
+                        "name": "Thai",
+                        "type": "Landrace",
+                        "thc": 13,
+                        "cbd": 0.1,
+                        "publicFlavors": ["Spicy", "Pine", "Earthy"],
+                        "notes": "Thai landrace",
+                        "parents": {}
+                      }
+                    }
+                  }
+                }
+              },
+              "Skunk #1 (Lemon)": {
+                "id": "skunk_1_lemon",
+                "name": "Skunk #1",
+                "type": "Hybrid",
+                "thc": 15,
+                "cbd": 0.2,
+                "publicFlavors": ["Skunk", "Earthy", "Pungent"],
+                "notes": "Afghan x Acapulco Gold x Colombian Gold",
+                "parents": {}
+              }
+            }
+          }
+        }
+      },
+      "Purple Punch": {
+        "id": "purple_punch",
+        "name": "Purple Punch",
+        "type": "Hybrid",
+        "thc": 18,
+        "cbd": 0.4,
+        "publicFlavors": ["Grape", "Berry", "Punch"],
+        "notes": "Larry OG x Grandpa Purple",
+        "parents": {
+          "Larry OG": {
+            "id": "larry_og",
+            "name": "Larry OG",
+            "type": "Hybrid",
+            "thc": 17,
+            "cbd": 0.2,
+            "publicFlavors": ["Lemon", "Earthy", "Pine"],
+            "notes": "OG Kush x SFV OG",
+            "parents": {
+              "OG Kush": {
+                "id": "og_kush",
+                "name": "OG Kush",
+                "type": "Hybrid",
+                "thc": 17,
+                "cbd": 0.1,
+                "publicFlavors": ["Pine", "Lemon", "Earthy"],
+                "notes": "Chemdawg x Hindu Kush",
+                "parents": {
+                  "Chemdawg": {
+                    "id": "chemdawg",
+                    "name": "Chemdawg",
+                    "type": "Hybrid",
+                    "thc": 16,
+                    "cbd": 0.1,
+                    "publicFlavors": ["Chemical", "Pine", "Diesel"],
+                    "notes": "Thai x Pakistani",
+                    "parents": {
+                      "Thai (Chemdawg)": {
+                        "id": "thai_chemdawg",
+                        "name": "Thai",
+                        "type": "Landrace",
+                        "thc": 13,
+                        "cbd": 0.1,
+                        "publicFlavors": ["Spicy", "Pine", "Earthy"],
+                        "notes": "Thai landrace",
+                        "parents": {}
+                      }
+                    }
+                  },
+                  "Hindu Kush": {
+                    "id": "hindu_kush",
+                    "name": "Hindu Kush",
+                    "type": "Landrace",
+                    "thc": 14,
+                    "cbd": 0.6,
+                    "publicFlavors": ["Earthy", "Pine", "Spicy"],
+                    "notes": "Hindu Kush mountains landrace",
+                    "parents": {}
+                  }
+                }
+              },
+              "SFV OG": {
+                "id": "sfv_og",
+                "name": "SFV OG",
+                "type": "Hybrid",
+                "thc": 16,
+                "cbd": 0.2,
+                "publicFlavors": ["Pine", "Lemon", "Earthy"],
+                "notes": "OG Kush phenotype",
+                "parents": {}
+              }
+            }
+          },
+          "Grandpa Purple": {
+            "id": "grandpa_purple",
+            "name": "Grandpa Purple",
+            "type": "Hybrid",
+            "thc": 16,
+            "cbd": 0.3,
+            "publicFlavors": ["Grape", "Sweet", "Berry"],
+            "notes": "Big Bud x Purple Urkle",
+            "parents": {
+              "Big Bud": {
+                "id": "big_bud",
+                "name": "Big Bud",
+                "type": "Hybrid",
+                "thc": 15,
+                "cbd": 0.2,
+                "publicFlavors": ["Sweet", "Earthy", "Fruity"],
+                "notes": "Afghan x Hashplant",
+                "parents": {
+                  "Afghan (Big Bud)": {
+                    "id": "afghan_bigbud",
+                    "name": "Afghan",
+                    "type": "Landrace",
+                    "thc": 14,
+                    "cbd": 0.5,
+                    "publicFlavors": ["Earthy", "Pine", "Spicy"],
+                    "notes": "Afghan landrace",
+                    "parents": {}
+                  }
+                }
+              },
+              "Purple Urkle": {
+                "id": "purple_urkle",
+                "name": "Purple Urkle",
+                "type": "Hybrid",
+                "thc": 15,
+                "cbd": 0.2,
+                "publicFlavors": ["Grape", "Berry", "Sweet"],
+                "notes": "Grandpa Purple phenotype",
+                "parents": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

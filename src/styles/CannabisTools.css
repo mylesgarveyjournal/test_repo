@@ -1,0 +1,257 @@
+/* Cannabis Tools Page */
+.cannabis-tools {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.tools-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.tools-header h1 {
+  font-size: 48px;
+  color: var(--green-900);
+  margin-bottom: 12px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.tools-header p {
+  font-size: 18px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Tools Grid */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.tool-card {
+  background: white;
+  border: 2px solid var(--green-700);
+  border-radius: 16px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--green-700);
+  transition: all 0.3s ease;
+}
+
+.tool-card.color-orange::before {
+  background: linear-gradient(90deg, #ff8c00, #ffa500);
+}
+
+.tool-card.color-purple::before {
+  background: linear-gradient(90deg, #9370db, #ba55d3);
+}
+
+.tool-card.color-green::before {
+  background: linear-gradient(90deg, #1e5631, #2d7a3a);
+}
+
+.tool-card.color-blue::before {
+  background: linear-gradient(90deg, #4169e1, #6495ed);
+}
+
+.tool-card.color-gold::before {
+  background: linear-gradient(90deg, #caa34d, #dab367);
+}
+
+.tool-card.color-red::before {
+  background: linear-gradient(90deg, #dc143c, #ff6347);
+}
+
+.tool-card:hover:not(.disabled) {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(30, 86, 49, 0.2);
+  border-color: var(--gold);
+}
+
+.tool-card.disabled {
+  opacity: 0.7;
+  background: linear-gradient(135deg, #f8f4ef 0%, rgba(30, 86, 49, 0.02) 100%);
+}
+
+.tool-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  display: inline-block;
+}
+
+.tool-name {
+  font-size: 22px;
+  color: var(--green-900);
+  margin-bottom: 12px;
+  font-weight: 700;
+  transition: color 0.2s ease;
+}
+
+.tool-card:hover:not(.disabled) .tool-name {
+  color: var(--gold);
+}
+
+.tool-description {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex-grow: 1;
+  margin-bottom: 24px;
+}
+
+.tool-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.available {
+  background: rgba(30, 86, 49, 0.1);
+  color: var(--green-700);
+}
+
+.status-badge.coming-soon {
+  background: rgba(107, 107, 107, 0.1);
+  color: var(--muted);
+}
+
+.tool-launch-btn {
+  padding: 10px 16px;
+  background: var(--green-700);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.tool-card:not(.disabled) .tool-launch-btn {
+  background: var(--green-700);
+}
+
+.tool-launch-btn:hover:not(:disabled) {
+  background: var(--green-900);
+  transform: translateX(2px);
+}
+
+.tool-launch-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background: var(--muted);
+}
+
+/* Tools Footer */
+.tools-footer {
+  background: linear-gradient(135deg, rgba(30, 86, 49, 0.05) 0%, rgba(202, 163, 77, 0.05) 100%);
+  border: 2px solid var(--green-700);
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.footer-content h3 {
+  font-size: 28px;
+  color: var(--green-900);
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.footer-content p {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.footer-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile Responsive */
+@media (max-width: 960px) {
+  .cannabis-tools {
+    padding: 24px 16px;
+  }
+
+  .tools-header h1 {
+    font-size: 36px;
+  }
+
+  .tools-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .tool-card {
+    padding: 24px 16px;
+  }
+
+  .tools-footer {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 720px) {
+  .tools-header h1 {
+    font-size: 28px;
+  }
+
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+
+  .tool-name {
+    font-size: 18px;
+  }
+
+  .tool-card {
+    padding: 16px;
+  }
+
+  .tools-footer {
+    padding: 16px;
+  }
+
+  .footer-content h3 {
+    font-size: 20px;
+  }
+}

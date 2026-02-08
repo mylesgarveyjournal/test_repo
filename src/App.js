@@ -4,6 +4,8 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import GenericPage from './pages/GenericPage';
 import Strains from './pages/Strains';
+import CannabisTools from './pages/CannabisTools';
+import FlavorTreeExplorer from './pages/FlavorTreeExplorer';
 
 export default function App() {
   return (
@@ -15,7 +17,8 @@ export default function App() {
         <Route path="/growers" element={<GenericPage title="Growers" />} />
         <Route path="/breeders" element={<GenericPage title="Breeders" />} />
         <Route path="/people" element={<GenericPage title="People" />} />
-        <Route path="/tools" element={<GenericPage title="Cannabis Tools" />} />
+        <Route path="/tools" element={<CannabisTools />} />
+        <Route path="/tools/flavor-tree" element={<FlavorTreeExplorer />} />
       </Routes>
     </Layout>
   );

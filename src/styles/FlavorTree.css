@@ -1,0 +1,164 @@
+/* Flavor Tree Visualization */
+.flavor-tree-container {
+  width: 100%;
+  height: 600px;
+  border: 2px solid var(--green-700);
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f4ef 0%, rgba(30, 86, 49, 0.03) 100%);
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  user-select: none;
+}
+
+.flavor-tree-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transition: transform 0.1s ease-out;
+}
+
+/* Tree connections (lines between parent/child) */
+.tree-connection {
+  stroke: var(--green-700);
+  stroke-width: 2;
+  opacity: 0.5;
+  stroke-dasharray: 5, 5;
+}
+
+/* Strain node styling */
+.strain-node {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+  transition: filter 0.2s ease;
+  cursor: pointer;
+}
+
+.strain-node:hover {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+  stroke-width: 3;
+}
+
+/* Strain name text */
+.strain-name {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #12341f;
+  text-anchor: middle;
+  pointer-events: none;
+  letter-spacing: 0.5px;
+}
+
+/* Strain type indicator */
+.strain-type {
+  font-size: 18px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* Flavor icons */
+.flavor-icons {
+  pointer-events: none;
+}
+
+.flavor-icon {
+  font-size: 16px;
+  text-anchor: middle;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Controls */
+.tree-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--green-700);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.tree-controls button {
+  background: var(--green-700);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.tree-controls button:hover {
+  background: var(--green-900);
+  transform: scale(1.05);
+}
+
+.tree-controls span {
+  min-width: 50px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--green-900);
+}
+
+/* Instructions */
+.tree-instructions {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--green-700);
+  font-size: 13px;
+  color: var(--green-900);
+  white-space: nowrap;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.tree-instructions p {
+  margin: 0;
+}
+
+/* Mobile responsive */
+@media (max-width: 720px) {
+  .flavor-tree-container {
+    height: 400px;
+  }
+
+  .tree-controls {
+    top: 8px;
+    right: 8px;
+    padding: 6px 10px;
+  }
+
+  .tree-controls button {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .tree-instructions {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .strain-name {
+    font-size: 10px;
+  }
+
+  .strain-node {
+    stroke-width: 1.5;
+  }
+}
