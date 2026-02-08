@@ -1,0 +1,6 @@
+[
+  { "id": "s1", "name": "Emerald Dream", "type": "Hybrid", "notes": "Citrus, relaxing", "description": "A balanced hybrid with citrus notes and gentle relaxation.", "thc": "18%", "cbd": "0.2%" },
+  { "id": "s2", "name": "Purple Haze", "type": "Sativa", "notes": "Uplifting", "description": "Classic sativa with a dreamy, euphoric profile and floral aroma.", "thc": "20%", "cbd": "0.1%" },
+  { "id": "s3", "name": "Golden Kush", "type": "Indica", "notes": "Sedating", "description": "Heavy indica for evening use, earthy and resinous.", "thc": "22%", "cbd": "0.3%" },
+  { "id": "s4", "name": "Crystal Oracle", "type": "Hybrid", "notes": "Fruity, cerebral", "description": "New cross with crystalline trichomes and bright fruit tones.", "thc": "16%", "cbd": "0.4%" }
+]

@@ -1,0 +1,2 @@
+Please add the logo image you provided to this project at: public/logo.png
+Recommended size: 200-512px wide for header use; 64px for small sidebar.
