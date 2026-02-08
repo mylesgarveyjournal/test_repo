@@ -19,6 +19,7 @@ export default function App() {
         <Route path="/people" element={<GenericPage title="People" />} />
         <Route path="/tools" element={<CannabisTools />} />
         <Route path="/tools/flavor-tree" element={<FlavorTreeExplorer />} />
+        <Route path="/tools/flavor-tree/:strainName" element={<FlavorTreeExplorer />} />
       </Routes>
     </Layout>
   );

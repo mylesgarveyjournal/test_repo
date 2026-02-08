@@ -10,7 +10,7 @@ const CannabisTools = () => {
       description: 'Interactive family tree visualization with complete flavor profile analysis. Track strain ancestry from modern cultivars back to landrace origins.',
       icon: '🍊',
       status: 'Available',
-      route: '/tools/flavor-tree',
+      route: '/tools/flavor-tree/mimosa',
       color: 'orange'
     },
     {
