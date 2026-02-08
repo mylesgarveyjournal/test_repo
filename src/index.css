@@ -37,7 +37,7 @@ body{
 .nav-label{display:inline-block;white-space:nowrap;transition:opacity 220ms ease, transform 220ms ease;transform-origin:left center}
 .nav-label.hide{opacity:0;transform:translateX(-6px);width:0;max-width:0;overflow:hidden}
 .nav-label.show{opacity:1;transform:translateX(0);}
-.main-content{flex:1;padding:28px;overflow:auto}
+.main-content{flex:1;padding:0;overflow:auto}
 .container{max-width:1100px;margin:0 auto}
 h1{font-family: Merriweather, serif;color:var(--green-900);font-size:40px;margin:8px 0}
 h2{color:var(--muted);font-size:26px}
@@ -45,7 +45,7 @@ h2{color:var(--muted);font-size:26px}
 
 @media (max-width: 720px) {
   .sidebar.open{position:fixed;z-index:30;left:0;top:0;height:100vh}
-  .main-content{padding:16px;margin-left:64px}
+  .main-content{padding:0;margin-left:64px}
 }
 
 /* Modern card styles for content */
@@ -79,4 +79,3 @@ h2{color:var(--muted);font-size:26px}
 .top-header .header-search{width:100%;padding:8px 14px;border-radius:8px;border:1.5px solid var(--green-700);background:white;font-size:14px;color:var(--muted);font-family:Inter, sans-serif;transition:all 0.2s ease;outline:none}
 .top-header .header-search:focus{border-color:var(--gold);background:#fafaf8;box-shadow:0 0 0 3px rgba(202,163,77,0.1)}
 .top-header .header-search::placeholder{color:rgba(107,107,107,0.5)}
-.main-content{flex:1;padding:28px;overflow:auto;min-height:0}
