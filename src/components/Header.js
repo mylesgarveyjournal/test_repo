@@ -15,7 +15,7 @@ export default function Header() {
     <header className="top-header">
       <div className="header-inner">
         <div className="header-logo">
-          <img src="/logo.png" alt="Cannaverum" className="logo-img" />
+          <img src="/header_logo.png" alt="Cannaverum" className="logo-img" />
           {strainName && (
             <div className="strain-title">
               {strainName}

@@ -4,94 +4,163 @@
   height: 100%;
   border: none;
   border-radius: 0;
-  background: linear-gradient(135deg, #f8f4ef 0%, rgba(30, 86, 49, 0.03) 100%);
+  background: linear-gradient(135deg, var(--cream) 0%, var(--green-50) 100%);
   position: relative;
   overflow: hidden;
-  touch-action: none;
   user-select: none;
 }
 
-.flavor-tree-svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  transition: transform 0.05s ease-out;
+/* React D3 Tree overrides */
+.rd3t-tree-container {
+  width: 100% !important;
+  height: 100% !important;
 }
 
-/* Tree connections - smooth curved paths */
-.tree-connection {
-  stroke: var(--green-700);
-  stroke-width: 2.5;
-  opacity: 0.6;
+.rd3t-svg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Tree link styling */
+.tree-link {
+  stroke: var(--green-500);
+  stroke-width: 3;
+  opacity: 0.7;
   fill: none;
   stroke-linecap: round;
-  stroke-linejoin: round;
   transition: opacity 0.2s ease, stroke-width 0.2s ease;
 }
 
-.tree-connection:hover {
+.tree-link:hover {
   opacity: 1;
-  stroke-width: 3.5;
+  stroke-width: 4.5;
 }
 
-/* Arrow marker styling */
-marker {
-  overflow: visible;
+/* Node group styling */
+.rd3t-node {
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Bud node styling */
-.bud-node {
-  transition: filter 0.15s ease, transform 0.15s ease;
-  transform-origin: center;
+.rd3t-node:hover {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
 }
 
-.bud-node:hover {
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
-  transform: scale(1.08);
+/* Color Legend - Draggable */
+.color-legend {
+  position: absolute;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 241, 232, 0.95) 100%);
+  padding: 16px;
+  border-radius: 12px;
+  border: 2px solid var(--gold);
+  backdrop-filter: blur(12px);
+  z-index: 20;
+  box-shadow: 0 6px 24px rgba(26, 71, 42, 0.2), 0 0 0 1px rgba(212, 167, 54, 0.3);
+  max-height: 70vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) transparent;
+  user-select: none;
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
-.bud-node:hover .tree-connection {
-  opacity: 1;
-  stroke-width: 3.5;
+.color-legend.collapsed {
+  padding: 12px 16px;
 }
 
-/* Strain name text */
-.strain-name {
+.color-legend.collapsed .legend-items {
+  display: none;
+}
+
+.color-legend::-webkit-scrollbar {
+  width: 6px;
+}
+
+.color-legend::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.color-legend::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 3px;
+}
+
+.legend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.legend-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: grab;
+}
+
+.color-legend.collapsed .legend-header {
+  margin-bottom: 0;
+}
+
+.legend-toggle {
+  background: var(--green-600);
+  color: white;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.legend-toggle:hover {
+  background: var(--green-700);
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(26, 71, 42, 0.3);
+}
+
+.legend-items {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.legend-item:hover {
+  transform: scale(1.05);
+  border-color: #fff;
+}
+
+.legend-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.legend-name {
   font-size: 12px;
   font-weight: 600;
-  fill: #12341f;
-  text-anchor: middle;
-  pointer-events: none;
-  letter-spacing: 0.5px;
-}
-
-/* Strain type indicator */
-.strain-type {
-  font-size: 18px;
-  text-anchor: middle;
-  pointer-events: none;
-}
-
-/* Flavor icons */
-.flavor-icons {
-  pointer-events: none;
-}
-
-.flavor-icon {
-  font-size: 16px;
-  text-anchor: middle;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
-  animation: bobbing 3s ease-in-out infinite;
-}
-
-/* Springy bobbing animation for flavor icons */
-@keyframes bobbing {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
+  white-space: nowrap;
 }
 
 /* Controls */
@@ -102,35 +171,37 @@ marker {
   display: flex;
   gap: 8px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.92);
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--green-700);
-  backdrop-filter: blur(4px);
-  z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 241, 232, 0.95) 100%);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid var(--gold);
+  backdrop-filter: blur(12px);
+  z-index: 30;
+  box-shadow: 0 6px 20px rgba(26, 71, 42, 0.18), 0 0 0 1px rgba(212, 167, 54, 0.3);
 }
 
 .tree-controls button {
-  background: var(--green-700);
+  background: linear-gradient(135deg, var(--green-500) 0%, var(--green-600) 100%);
   color: white;
   border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-weight: 700;
+  user-select: none;
+  box-shadow: 0 2px 6px rgba(26, 71, 42, 0.2);
 }
 
 .tree-controls button:hover {
-  background: var(--green-900);
-  transform: scale(1.12);
-  box-shadow: 0 4px 12px rgba(30, 86, 49, 0.3);
+  background: linear-gradient(135deg, var(--green-600) 0%, var(--green-700) 100%);
+  transform: scale(1.15);
+  box-shadow: 0 6px 18px rgba(26, 71, 42, 0.35);
 }
 
 .tree-controls button:active {
@@ -138,11 +209,11 @@ marker {
 }
 
 .tree-controls span {
-  min-width: 50px;
+  min-width: 60px;
   text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--green-900);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
 }
 
 /* Instructions */
@@ -151,16 +222,16 @@ marker {
   bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.95);
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--green-700);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(245, 241, 232, 0.93) 100%);
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 2px solid var(--gold-light);
   font-size: 13px;
-  color: var(--green-900);
+  color: var(--text);
   white-space: nowrap;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(26, 71, 42, 0.12), 0 0 0 1px rgba(212, 167, 54, 0.2);
 }
 
 .tree-instructions p {
@@ -170,6 +241,34 @@ marker {
 
 /* Mobile responsive */
 @media (max-width: 720px) {
+  .color-legend {
+    max-height: 50vh;
+    max-width: 85vw;
+    font-size: 13px;
+  }
+
+  .legend-header h3 {
+    font-size: 14px;
+  }
+
+  .legend-items {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .legend-item {
+    padding: 5px 8px;
+    font-size: 11px;
+  }
+
+  .legend-icon {
+    font-size: 14px;
+  }
+
+  .legend-name {
+    font-size: 11px;
+  }
+
   .tree-controls {
     top: 8px;
     right: 8px;
@@ -183,21 +282,31 @@ marker {
   }
 
   .tree-instructions {
-    font-size: 12px;
+    font-size: 11px;
     padding: 6px 12px;
     bottom: 8px;
+    left: 8px;
     right: 8px;
-    left: auto;
     transform: none;
     white-space: normal;
-    max-width: 200px;
+    text-align: center;
   }
 
-  .strain-name {
-    font-size: 10px;
+  .strain-label {
+    font-size: 12px;
   }
 
   .tree-connection {
     stroke-width: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .legend-items {
+    grid-template-columns: 1fr;
+  }
+
+  .color-legend {
+    max-width: 90vw;
   }
 }

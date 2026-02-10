@@ -202,8 +202,8 @@
                 "publicFlavors": ["Sweet", "Earthy", "Fruity"],
                 "notes": "Afghan x Hashplant",
                 "parents": {
-                  "Afghan (Big Bud)": {
-                    "id": "afghan_bigbud",
+                  "Afghan": {
+                    "id": "afghan",
                     "name": "Afghan",
                     "type": "Landrace",
                     "thc": 14,
