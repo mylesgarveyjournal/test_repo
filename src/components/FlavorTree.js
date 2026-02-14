@@ -554,7 +554,8 @@ const FlavorTree = ({ strainData }) => {
                   }}
                   style={{ 
                     cursor: 'pointer',
-                    pointerEvents: 'all'
+                    pointerEvents: 'all',
+                    overflow: 'visible'
                   }}
                 >
                   <div
@@ -563,6 +564,7 @@ const FlavorTree = ({ strainData }) => {
                       height: '100px',
                       borderRadius: '12px',
                       border: 'none',
+                      outline: 'none',
                       background: (() => {
                         // Create smooth flowing swirl with multiple color rotations
                         const c1 = node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow';
@@ -586,15 +588,14 @@ const FlavorTree = ({ strainData }) => {
                           ${c1} 360deg
                         )`;
                       })(),
-                      filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))',
-                      opacity: 0.95,
                       boxSizing: 'border-box',
                       position: 'relative',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '12px',
-                      paddingTop: '10px'
+                      paddingTop: '10px',
+                      overflow: 'visible'
                     }}
                   >
                     {/* Flavor ovals as HTML elements on top of gradient */}
