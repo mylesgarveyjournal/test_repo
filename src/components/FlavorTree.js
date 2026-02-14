@@ -271,10 +271,13 @@ const FlavorTree = ({ strainData }) => {
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       setTouchDistance(Math.sqrt(dx * dx + dy * dy));
-      // Store pinch center point
+      // Store pinch center in SVG coordinates relative to current view
+      const svgRect = svgRef.current.getBoundingClientRect();
+      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
       setPinchCenter({
-        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
-        y: (e.touches[0].clientY + e.touches[1].clientY) / 2
+        x: centerX - svgRect.left,
+        y: centerY - svgRect.top
       });
     }
   };
@@ -285,20 +288,23 @@ const FlavorTree = ({ strainData }) => {
     setTouchMoved(true);
     
     if (e.touches.length === 2 && touchDistance > 0) {
-      // Pinch zoom - do this first
+      // Pinch zoom - smooth incremental zoom
       setIsDragging(false); // Make sure we're not dragging
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const newDistance = Math.sqrt(dx * dx + dy * dy);
       const zoomFactor = newDistance / touchDistance;
       
-      // Calculate new zoom
+      // Calculate new zoom with smooth incremental changes
       const newZoom = Math.max(0.2, Math.min(3, zoom * zoomFactor));
       
-      // Adjust pan to zoom at pinch center point
-      const zoomRatio = newZoom / zoom;
-      setPanX(prev => pinchCenter.x - (pinchCenter.x - prev) * zoomRatio);
-      setPanY(prev => pinchCenter.y - (pinchCenter.y - prev) * zoomRatio);
+      // Convert pinch center from screen to world coordinates
+      const worldX = (pinchCenter.x - panX) / zoom;
+      const worldY = (pinchCenter.y - panY) / zoom;
+      
+      // Adjust pan to keep pinch center fixed in world space
+      setPanX(pinchCenter.x - worldX * newZoom);
+      setPanY(pinchCenter.y - worldY * newZoom);
       setZoom(newZoom);
       
       setTouchDistance(newDistance);
@@ -562,9 +568,11 @@ const FlavorTree = ({ strainData }) => {
                     style={{
                       width: '180px',
                       height: '100px',
-                      borderRadius: '12px',
                       border: 'none',
                       outline: 'none',
+                      margin: 0,
+                      padding: 0,
+                      boxShadow: 'none',
                       background: (() => {
                         // Create smooth flowing swirl with multiple color rotations
                         const c1 = node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow';
