@@ -493,7 +493,7 @@ const FlavorTree = ({ strainData }) => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create THE SAME swirl pattern for all boxes - a proper psychedelic swirl
+            // Create smooth psychedelic spiral pattern - same for all boxes, only colors differ
             return (
               <React.Fragment key={pattern.id}>
                 <pattern 
@@ -502,69 +502,73 @@ const FlavorTree = ({ strainData }) => {
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  {/* Create swirl using multiple rotated wedge shapes */}
-                  <rect width="180" height="100" fill={pattern.colors[0]} />
+                  <defs>
+                    {/* Create radial gradient for each color arm of the spiral */}
+                    <radialGradient id={`${pattern.id}-bg`} cx="50%" cy="50%">
+                      <stop offset="0%" stopColor={pattern.colors[0]} />
+                      <stop offset="35%" stopColor={pattern.colors[1]} />
+                      <stop offset="70%" stopColor={pattern.colors[2]} />
+                      <stop offset="100%" stopColor={pattern.colors[0]} />
+                    </radialGradient>
+                  </defs>
                   
-                  {/* Swirl wedges - creating a pinwheel/spiral effect */}
+                  {/* Base gradient background */}
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-bg)`} />
+                  
+                  {/* Create spiral arms using curved paths */}
                   <g transform="translate(90, 50)">
-                    {/* Wedge 1 - Color 1 */}
-                    <path 
-                      d="M 0,0 L 80,-40 A 90,90 0 0,1 80,40 Z" 
-                      fill={pattern.colors[1]}
-                      opacity="0.9"
-                    />
-                    {/* Wedge 2 - Color 2 */}
-                    <path 
-                      d="M 0,0 L 80,40 A 90,90 0 0,1 -40,80 Z" 
-                      fill={pattern.colors[2]}
-                      opacity="0.9"
-                    />
-                    {/* Wedge 3 - Color 0 */}
-                    <path 
-                      d="M 0,0 L -40,80 A 90,90 0 0,1 -80,-40 Z" 
+                    {/* Spiral arm 1 - Color 1 */}
+                    <path
+                      d="M 0,0 Q 20,-10 35,-15 Q 50,-18 60,-15 Q 70,-10 75,0 Q 78,15 70,25 Q 60,32 45,35 Q 25,36 10,28 Q -5,18 -12,5"
                       fill={pattern.colors[0]}
                       opacity="0.85"
-                    />
-                    {/* Wedge 4 - Color 1 again */}
-                    <path 
-                      d="M 0,0 L -80,-40 A 90,90 0 0,1 40,-80 Z" 
-                      fill={pattern.colors[1]}
-                      opacity="0.85"
-                    />
-                    {/* Wedge 5 - Color 2 again */}
-                    <path 
-                      d="M 0,0 L 40,-80 A 90,90 0 0,1 80,-40 Z" 
-                      fill={pattern.colors[2]}
-                      opacity="0.8"
                     />
                     
-                    {/* Inner swirl for depth */}
-                    <circle cx="0" cy="0" r="35" fill={pattern.colors[1]} opacity="0.6" />
-                    <path 
-                      d="M 0,0 L 30,-15 A 35,35 0 0,1 30,15 Z" 
-                      fill={pattern.colors[2]}
-                      opacity="0.7"
-                    />
-                    <path 
-                      d="M 0,0 L 30,15 A 35,35 0 0,1 -15,30 Z" 
-                      fill={pattern.colors[0]}
-                      opacity="0.7"
-                    />
-                    <path 
-                      d="M 0,0 L -15,30 A 35,35 0 0,1 -30,-15 Z" 
+                    {/* Spiral arm 2 - Color 2 (rotated) */}
+                    <path
+                      d="M 0,0 Q 20,-10 35,-15 Q 50,-18 60,-15 Q 70,-10 75,0 Q 78,15 70,25 Q 60,32 45,35 Q 25,36 10,28 Q -5,18 -12,5"
                       fill={pattern.colors[1]}
-                      opacity="0.7"
+                      opacity="0.85"
+                      transform="rotate(120)"
                     />
-                    <path 
-                      d="M 0,0 L -30,-15 A 35,35 0 0,1 15,-30 Z" 
+                    
+                    {/* Spiral arm 3 - Color 3 (rotated) */}
+                    <path
+                      d="M 0,0 Q 20,-10 35,-15 Q 50,-18 60,-15 Q 70,-10 75,0 Q 78,15 70,25 Q 60,32 45,35 Q 25,36 10,28 Q -5,18 -12,5"
                       fill={pattern.colors[2]}
-                      opacity="0.7"
+                      opacity="0.85"
+                      transform="rotate(240)"
                     />
-                    <path 
-                      d="M 0,0 L 15,-30 A 35,35 0 0,1 30,-15 Z" 
+                    
+                    {/* Inner tighter spiral arms for depth */}
+                    <path
+                      d="M 0,0 Q 10,-5 18,-8 Q 28,-10 35,-8 Q 40,-5 42,2 Q 43,10 38,15 Q 30,18 20,18 Q 10,16 4,10"
+                      fill={pattern.colors[1]}
+                      opacity="0.75"
+                      transform="rotate(60)"
+                    />
+                    
+                    <path
+                      d="M 0,0 Q 10,-5 18,-8 Q 28,-10 35,-8 Q 40,-5 42,2 Q 43,10 38,15 Q 30,18 20,18 Q 10,16 4,10"
+                      fill={pattern.colors[2]}
+                      opacity="0.75"
+                      transform="rotate(180)"
+                    />
+                    
+                    <path
+                      d="M 0,0 Q 10,-5 18,-8 Q 28,-10 35,-8 Q 40,-5 42,2 Q 43,10 38,15 Q 30,18 20,18 Q 10,16 4,10"
                       fill={pattern.colors[0]}
-                      opacity="0.7"
+                      opacity="0.75"
+                      transform="rotate(300)"
                     />
+                    
+                    {/* Center glow */}
+                    <radialGradient id={`${pattern.id}-center`}>
+                      <stop offset="0%" stopColor={pattern.colors[2]} stopOpacity="0.9" />
+                      <stop offset="60%" stopColor={pattern.colors[1]} stopOpacity="0.6" />
+                      <stop offset="100%" stopColor="transparent" />
+                    </radialGradient>
+                    <circle cx="0" cy="0" r="25" fill={`url(#${pattern.id}-center)`} />
                   </g>
                 </pattern>
               </React.Fragment>
