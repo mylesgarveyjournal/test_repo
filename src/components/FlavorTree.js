@@ -488,67 +488,73 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Create smooth flowing swirl - 1960s psychedelic style */}
+          {/* Create TRUE rotating conic swirl - same pattern for all boxes */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create SILKY SMOOTH circular flowing swirl - organic, liquid, topological
+            // Create PROPER conic gradient using angular mathematics
+            // Generate smooth rotating wedges that create a spiral effect
+            const segments = 360; // One per degree for ultra-smooth
+            const rotations = 4; // Number of complete color cycles (>360 deg)
+            
             return (
               <React.Fragment key={pattern.id}>
-                {/* Base spiraling gradient - circular not linear */}
-                <radialGradient id={`${pattern.id}-base`} cx="50%" cy="50%">
-                  <stop offset="0%" stopColor={pattern.colors[1]} />
-                  <stop offset="12%" stopColor={pattern.colors[0]} />
-                  <stop offset="24%" stopColor={pattern.colors[2]} />
-                  <stop offset="36%" stopColor={pattern.colors[1]} />
-                  <stop offset="48%" stopColor={pattern.colors[0]} />
-                  <stop offset="60%" stopColor={pattern.colors[2]} />
-                  <stop offset="72%" stopColor={pattern.colors[1]} />
-                  <stop offset="84%" stopColor={pattern.colors[0]} />
-                  <stop offset="100%" stopColor={pattern.colors[2]} />
-                </radialGradient>
-                
-                {/* Smooth flowing circular distortion filter */}
-                <filter id={`${pattern.id}-swirl`} x="-50%" y="-50%" width="200%" height="200%">
-                  {/* Balanced turbulence for circular flow */}
-                  <feTurbulence 
-                    type="fractalNoise" 
-                    baseFrequency="0.015" 
-                    numOctaves="6" 
-                    result="turbulence"
-                    seed="42"
-                  />
-                  {/* Circular displacement for spiral flow */}
-                  <feDisplacementMap 
-                    in="SourceGraphic" 
-                    in2="turbulence" 
-                    scale="60" 
-                    xChannelSelector="R" 
-                    yChannelSelector="B"
-                    result="displaced"
-                  />
-                  {/* Light blur for smooth flow */}
-                  <feGaussianBlur in="displaced" stdDeviation="1.5" result="blurred" />
-                  {/* Color enhancement */}
-                  <feColorMatrix 
-                    in="blurred"
-                    type="saturate" 
-                    values="1.4"
-                    result="saturated"
-                  />
-                  {/* Final smoothing */}
-                  <feGaussianBlur in="saturated" stdDeviation="0.8" />
-                </filter>
-                
                 <pattern 
                   id={pattern.id}
                   x="0" y="0" 
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  {/* Apply smooth circular swirl */}
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-base)`} filter={`url(#${pattern.id}-swirl)`} />
+                  <defs>
+                    {/* Create smooth color stops for blending */}
+                    <radialGradient id={`${pattern.id}-smoothing`} cx="50%" cy="50%">
+                      <stop offset="0%" stopColor="transparent" />
+                      <stop offset="70%" stopColor="transparent" />
+                      <stop offset="100%" stopColor="black" stopOpacity="0.1" />
+                    </radialGradient>
+                  </defs>
+                  
+                  <g transform="translate(90, 50)">
+                    {/* Create ultra-smooth conic gradient using thin wedges */}
+                    {Array.from({ length: segments }).map((_, i) => {
+                      const angle = (i / segments) * 360;
+                      const nextAngle = ((i + 1) / segments) * 360;
+                      
+                      // Calculate which color based on angle with multiple rotations
+                      const normalizedAngle = (angle * rotations) % 360;
+                      const colorPhase = normalizedAngle / 360;
+                      
+                      // Smooth interpolation between colors
+                      let color;
+                      if (colorPhase < 0.333) {
+                        color = pattern.colors[0];
+                      } else if (colorPhase < 0.666) {
+                        color = pattern.colors[1];
+                      } else {
+                        color = pattern.colors[2];
+                      }
+                      
+                      // Calculate wedge points
+                      const radius = 100;
+                      const x1 = Math.cos(angle * Math.PI / 180) * radius;
+                      const y1 = Math.sin(angle * Math.PI / 180) * radius;
+                      const x2 = Math.cos(nextAngle * Math.PI / 180) * radius;
+                      const y2 = Math.sin(nextAngle * Math.PI / 180) * radius;
+                      
+                      return (
+                        <path
+                          key={i}
+                          d={`M 0,0 L ${x1},${y1} L ${x2},${y2} Z`}
+                          fill={color}
+                          opacity="0.95"
+                        />
+                      );
+                    })}
+                    
+                    {/* Add subtle glow overlay for depth */}
+                    <circle cx="0" cy="0" r="100" fill={`url(#${pattern.id}-smoothing)`} />
+                  </g>
                 </pattern>
               </React.Fragment>
             );
