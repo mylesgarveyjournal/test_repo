@@ -488,40 +488,56 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Create smooth swirl pattern using SVG filters - same for all boxes, only colors differ */}
+          {/* Create smooth flowing swirl - 1960s psychedelic style */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create SMOOTH swirl using turbulence and displacement filters
+            // Create SILKY SMOOTH flowing swirl - organic, liquid, topological
             return (
               <React.Fragment key={pattern.id}>
-                {/* Base gradient with 3 colors */}
+                {/* Base spiraling gradient */}
                 <radialGradient id={`${pattern.id}-base`} cx="50%" cy="50%">
                   <stop offset="0%" stopColor={pattern.colors[0]} />
-                  <stop offset="20%" stopColor={pattern.colors[1]} />
-                  <stop offset="40%" stopColor={pattern.colors[2]} />
-                  <stop offset="60%" stopColor={pattern.colors[0]} />
-                  <stop offset="80%" stopColor={pattern.colors[1]} />
-                  <stop offset="100%" stopColor={pattern.colors[2]} />
+                  <stop offset="15%" stopColor={pattern.colors[1]} />
+                  <stop offset="30%" stopColor={pattern.colors[2]} />
+                  <stop offset="45%" stopColor={pattern.colors[0]} />
+                  <stop offset="60%" stopColor={pattern.colors[1]} />
+                  <stop offset="75%" stopColor={pattern.colors[2]} />
+                  <stop offset="90%" stopColor={pattern.colors[0]} />
+                  <stop offset="100%" stopColor={pattern.colors[1]} />
                 </radialGradient>
                 
-                {/* Swirl distortion filter */}
+                {/* Smooth flowing distortion filter */}
                 <filter id={`${pattern.id}-swirl`} x="-50%" y="-50%" width="200%" height="200%">
+                  {/* Very smooth turbulence for organic flow */}
                   <feTurbulence 
-                    type="turbulence" 
-                    baseFrequency="0.02" 
-                    numOctaves="3" 
+                    type="fractalNoise" 
+                    baseFrequency="0.008 0.012" 
+                    numOctaves="5" 
                     result="turbulence"
-                    seed="1"
+                    seed="7"
                   />
+                  {/* Smooth displacement for liquid flow */}
                   <feDisplacementMap 
                     in="SourceGraphic" 
                     in2="turbulence" 
-                    scale="30" 
+                    scale="80" 
                     xChannelSelector="R" 
                     yChannelSelector="G"
+                    result="displaced"
                   />
+                  {/* Blur for silky smooth edges */}
+                  <feGaussianBlur in="displaced" stdDeviation="2" result="blurred" />
+                  {/* Enhance colors */}
+                  <feColorMatrix 
+                    in="blurred"
+                    type="saturate" 
+                    values="1.3"
+                    result="saturated"
+                  />
+                  {/* Final smooth blend */}
+                  <feGaussianBlur in="saturated" stdDeviation="1" />
                 </filter>
                 
                 <pattern 
@@ -530,7 +546,7 @@ const FlavorTree = ({ strainData }) => {
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  {/* Apply base gradient with swirl filter */}
+                  {/* Apply smooth swirl */}
                   <rect width="180" height="100" fill={`url(#${pattern.id}-base)`} filter={`url(#${pattern.id}-swirl)`} />
                 </pattern>
               </React.Fragment>
