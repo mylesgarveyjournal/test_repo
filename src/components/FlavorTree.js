@@ -201,6 +201,8 @@ const FlavorTree = ({ strainData }) => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [touchDistance, setTouchDistance] = useState(0);
   const [pinchCenter, setPinchCenter] = useState({ x: 0, y: 0 });
+  const [pinchStartZoom, setPinchStartZoom] = useState(0.7);
+  const [pinchStartPan, setPinchStartPan] = useState({ x: 0, y: 0 });
   const [hiddenNodes, setHiddenNodes] = useState(new Set());
   const [touchStartTime, setTouchStartTime] = useState(0);
   const [touchMoved, setTouchMoved] = useState(false);
@@ -275,18 +277,14 @@ const FlavorTree = ({ strainData }) => {
       // Only update if we're actually starting a new pinch (distance was 0)
       if (touchDistance === 0) {
         setTouchDistance(newDistance);
-        // Calculate pinch center in WORLD coordinates (stays fixed during pinch)
+        // Store pinch center as screen coordinates (relative to SVG)
         const svgRect = svgRef.current.getBoundingClientRect();
-        const screenCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-        const screenCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-        const svgX = screenCenterX - svgRect.left;
-        const svgY = screenCenterY - svgRect.top;
+        const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - svgRect.left;
+        const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - svgRect.top;
         
-        // Convert to world coordinates using current transform
-        const worldX = (svgX - panX) / zoom;
-        const worldY = (svgY - panY) / zoom;
-        
-        setPinchCenter({ x: worldX, y: worldY });
+        setPinchCenter({ x: centerX, y: centerY });
+        setPinchStartZoom(zoom);
+        setPinchStartPan({ x: panX, y: panY });
       }
     }
   };
@@ -298,28 +296,24 @@ const FlavorTree = ({ strainData }) => {
     
     if (e.touches.length === 2 && touchDistance > 0) {
       // Pinch zoom - smooth incremental zoom
-      setIsDragging(false); // Make sure we're not dragging
+      setIsDragging(false);
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const newDistance = Math.sqrt(dx * dx + dy * dy);
-      const zoomFactor = newDistance / touchDistance;
+      const zoomRatio = newDistance / touchDistance;
       
-      // Calculate new zoom with smooth incremental changes
-      const newZoom = Math.max(0.2, Math.min(3, zoom * zoomFactor));
+      // Calculate new zoom
+      const newZoom = Math.max(0.2, Math.min(3, pinchStartZoom * zoomRatio));
       
-      // Get current screen position of pinch center
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const screenCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      const screenCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      const svgX = screenCenterX - svgRect.left;
-      const svgY = screenCenterY - svgRect.top;
+      // Calculate pan to keep pinch center fixed in screen space
+      // worldPoint = (screenPoint - pan) / zoom
+      // Keep worldPoint constant: (pinchCenter - pinchStartPan) / pinchStartZoom = (pinchCenter - newPan) / newZoom
+      const worldX = (pinchCenter.x - pinchStartPan.x) / pinchStartZoom;
+      const worldY = (pinchCenter.y - pinchStartPan.y) / pinchStartZoom;
       
-      // pinchCenter contains world coordinates - keep them at this screen position
-      setPanX(svgX - pinchCenter.x * newZoom);
-      setPanY(svgY - pinchCenter.y * newZoom);
+      setPanX(pinchCenter.x - worldX * newZoom);
+      setPanY(pinchCenter.y - worldY * newZoom);
       setZoom(newZoom);
-      
-      setTouchDistance(newDistance);
     } else if (e.touches.length === 1 && isDragging) {
       // Pan
       const dx = e.touches[0].clientX - dragStart.x;
