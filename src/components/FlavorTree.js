@@ -4,29 +4,25 @@ import { mixFlavorColors, getStrainFlavors, getFlavorIcon, baseFlavorColors } fr
 import '../styles/FlavorTree.css';
 
 // Generate psychedelic swirl pattern for a node
+// All nodes use THE SAME swirl pattern, only colors differ
 const createPsychedelicPattern = (nodeId, flavors) => {
   if (!flavors || flavors.length === 0) return null;
   
-  // Get up to 3 colors
+  // Get exactly 3 colors for the swirl
   const colors = flavors.slice(0, 3).map(flavor => {
     const colorData = baseFlavorColors[flavor];
     if (!colorData) return 'rgb(200, 200, 200)';
     return `rgb(${colorData.r}, ${colorData.g}, ${colorData.b})`;
   });
   
-  // Ensure we have exactly 3 colors for the swirl
+  // Ensure we have exactly 3 colors
   while (colors.length < 3) {
     colors.push(colors[colors.length - 1]);
   }
   
-  // Use node ID to generate consistent rotation variation
-  const seed = nodeId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const rotation = (seed % 360);
-  
   return {
-    id: `gradient-${nodeId}`,
-    colors: colors,
-    rotation: rotation
+    id: `swirl-${nodeId}`,
+    colors: colors
   };
 };
 
@@ -492,30 +488,55 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Generate psychedelic swirl patterns for each node */}
+          {/* Generate identical psychedelic swirl patterns for each node - only colors differ */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create a psychedelic swirl using radial gradient with repeating color pattern
+            // Create THE SAME swirl pattern for all boxes using multiple rotated linear gradients
+            // This creates a conic/swirl effect by layering gradients at different angles
             return (
-              <radialGradient 
-                key={pattern.id} 
-                id={pattern.id}
-                cx="50%" 
-                cy="50%"
-                gradientTransform={`rotate(${pattern.rotation} 0.5 0.5)`}
-              >
-                <stop offset="0%" stopColor={pattern.colors[0]} />
-                <stop offset="12%" stopColor={pattern.colors[1]} />
-                <stop offset="24%" stopColor={pattern.colors[2]} />
-                <stop offset="36%" stopColor={pattern.colors[0]} />
-                <stop offset="48%" stopColor={pattern.colors[1]} />
-                <stop offset="60%" stopColor={pattern.colors[2]} />
-                <stop offset="72%" stopColor={pattern.colors[0]} />
-                <stop offset="84%" stopColor={pattern.colors[1]} />
-                <stop offset="100%" stopColor={pattern.colors[2]} stopOpacity="0.9" />
-              </radialGradient>
+              <React.Fragment key={pattern.id}>
+                {/* Create multiple linear gradients rotated at different angles for swirl effect */}
+                <linearGradient id={`${pattern.id}-0`} gradientTransform="rotate(0 0.5 0.5)">
+                  <stop offset="0%" stopColor={pattern.colors[0]} />
+                  <stop offset="33%" stopColor={pattern.colors[1]} />
+                  <stop offset="66%" stopColor={pattern.colors[2]} />
+                  <stop offset="100%" stopColor={pattern.colors[0]} />
+                </linearGradient>
+                <linearGradient id={`${pattern.id}-60`} gradientTransform="rotate(60 0.5 0.5)">
+                  <stop offset="0%" stopColor={pattern.colors[1]} />
+                  <stop offset="33%" stopColor={pattern.colors[2]} />
+                  <stop offset="66%" stopColor={pattern.colors[0]} />
+                  <stop offset="100%" stopColor={pattern.colors[1]} />
+                </linearGradient>
+                <linearGradient id={`${pattern.id}-120`} gradientTransform="rotate(120 0.5 0.5)">
+                  <stop offset="0%" stopColor={pattern.colors[2]} />
+                  <stop offset="33%" stopColor={pattern.colors[0]} />
+                  <stop offset="66%" stopColor={pattern.colors[1]} />
+                  <stop offset="100%" stopColor={pattern.colors[2]} />
+                </linearGradient>
+                
+                {/* Combine gradients in a pattern for the swirl effect */}
+                <pattern 
+                  id={pattern.id}
+                  x="0" y="0" 
+                  width="1" height="1"
+                  patternUnits="objectBoundingBox"
+                >
+                  <rect width="100%" height="100%" fill={`url(#${pattern.id}-0)`} />
+                  <rect width="100%" height="100%" fill={`url(#${pattern.id}-60)`} opacity="0.7" />
+                  <rect width="100%" height="100%" fill={`url(#${pattern.id}-120)`} opacity="0.7" />
+                  
+                  {/* Add radial burst for more psychedelic effect */}
+                  <radialGradient id={`${pattern.id}-radial`}>
+                    <stop offset="0%" stopColor={pattern.colors[1]} stopOpacity="0.6" />
+                    <stop offset="50%" stopColor={pattern.colors[2]} stopOpacity="0.4" />
+                    <stop offset="100%" stopColor={pattern.colors[0]} stopOpacity="0.2" />
+                  </radialGradient>
+                  <circle cx="50%" cy="50%" r="70%" fill={`url(#${pattern.id}-radial)`} />
+                </pattern>
+              </React.Fragment>
             );
           })}
           
@@ -578,7 +599,7 @@ const FlavorTree = ({ strainData }) => {
           
           {/* Render nodes */}
           {visibleData.nodes.map(node => {
-            const gradientId = `url(#gradient-${node.id})`;
+            const patternId = `url(#swirl-${node.id})`;
             const isHidden = node.isHidden;
             
             const handleNodeInteraction = (e) => {
@@ -601,7 +622,7 @@ const FlavorTree = ({ strainData }) => {
                   height={height}
                   rx={12}
                   ry={12}
-                  fill={gradientId}
+                  fill={patternId}
                   stroke="#1a5c36"
                   strokeWidth={isHidden ? "2" : "3"}
                   opacity="0.95"
