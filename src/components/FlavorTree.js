@@ -488,42 +488,40 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Create ONE continuous smooth flowing swirl */}
+          {/* Create uniform swirl using linear gradient convergence - PREDICTABLE and CLEAN */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Single continuous smooth swirl with 3 colors
+            // Create 6 linear gradients rotating around center for smooth conic effect
+            const gradients = [];
+            for (let i = 0; i < 6; i++) {
+              const angle = i * 60; // 60 degrees apart
+              const colorIndex = i % 3;
+              const nextColorIndex = (i + 1) % 3;
+              
+              gradients.push(
+                <linearGradient 
+                  key={`grad-${i}`}
+                  id={`${pattern.id}-grad${i}`} 
+                  gradientTransform={`rotate(${angle} 0.5 0.5)`}
+                >
+                  <stop offset="0%" stopColor={pattern.colors[colorIndex]} />
+                  <stop offset="100%" stopColor={pattern.colors[nextColorIndex]} />
+                </linearGradient>
+              );
+            }
+            
             return (
               <React.Fragment key={pattern.id}>
-                {/* Single unified gradient with 3 colors */}
-                <radialGradient id={`${pattern.id}-unified`} cx="50%" cy="50%">
-                  <stop offset="0%" stopColor={pattern.colors[0]} />
-                  <stop offset="25%" stopColor={pattern.colors[1]} />
-                  <stop offset="50%" stopColor={pattern.colors[2]} />
-                  <stop offset="75%" stopColor={pattern.colors[0]} />
-                  <stop offset="100%" stopColor={pattern.colors[1]} />
-                </radialGradient>
+                {gradients}
                 
-                {/* Smooth continuous swirl distortion */}
-                <filter id={`${pattern.id}-flow`}>
-                  <feTurbulence 
-                    type="fractalNoise" 
-                    baseFrequency="0.025" 
-                    numOctaves="3" 
-                    result="noise"
-                    seed="777"
-                  />
-                  <feDisplacementMap 
-                    in="SourceGraphic" 
-                    in2="noise" 
-                    scale="50" 
-                    xChannelSelector="R" 
-                    yChannelSelector="G"
-                    result="displaced"
-                  />
-                  <feGaussianBlur in="displaced" stdDeviation="3" />
-                </filter>
+                {/* Central radial for smooth blending */}
+                <radialGradient id={`${pattern.id}-center`}>
+                  <stop offset="0%" stopColor={pattern.colors[0]} stopOpacity="0.8" />
+                  <stop offset="50%" stopColor={pattern.colors[1]} stopOpacity="0.6" />
+                  <stop offset="100%" stopColor={pattern.colors[2]} stopOpacity="0.4" />
+                </radialGradient>
                 
                 <pattern 
                   id={pattern.id}
@@ -531,13 +529,14 @@ const FlavorTree = ({ strainData }) => {
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  {/* Single continuous swirling layer */}
-                  <rect 
-                    width="180" 
-                    height="100" 
-                    fill={`url(#${pattern.id}-unified)`} 
-                    filter={`url(#${pattern.id}-flow)`}
-                  />
+                  {/* Layer the gradients for smooth conic effect - STAYS INSIDE BOX */}
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad0)`} opacity="0.5" />
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad1)`} opacity="0.5" />
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad2)`} opacity="0.5" />
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad3)`} opacity="0.5" />
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad4)`} opacity="0.5" />
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad5)`} opacity="0.5" />
+                  <circle cx="90" cy="50" r="70" fill={`url(#${pattern.id}-center)`} />
                 </pattern>
               </React.Fragment>
             );
@@ -704,23 +703,29 @@ const FlavorTree = ({ strainData }) => {
                 <g transform="translate(0, 0)">
                   {node.flavors.slice(0, 3).map((flavor, idx) => (
                     <g key={idx}>
-                      {/* Oval background for flavor icon - more opaque to stand out from swirl */}
+                      {/* Mini button-like oval background for flavor icons */}
+                      <defs>
+                        <radialGradient id={`icon-bg-${node.id}-${idx}`}>
+                          <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)" />
+                          <stop offset="100%" stopColor="rgba(240, 240, 240, 0.9)" />
+                        </radialGradient>
+                      </defs>
                       <ellipse
                         cx={(idx - 1) * 30}
                         cy={5}
-                        rx={16}
-                        ry={14}
-                        fill="rgba(255, 255, 255, 0.85)"
-                        stroke="rgba(255, 255, 255, 0.95)"
-                        strokeWidth="2"
-                        style={{ pointerEvents: 'none' }}
+                        rx={18}
+                        ry={16}
+                        fill={`url(#icon-bg-${node.id}-${idx})`}
+                        stroke="rgba(200, 200, 200, 0.8)"
+                        strokeWidth="1.5"
+                        style={{ pointerEvents: 'none', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.3))' }}
                       />
                       <text
                         fontSize="22"
                         textAnchor="middle"
                         x={(idx - 1) * 30}
                         y="5"
-                        style={{ pointerEvents: 'none', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.6))' }}
+                        style={{ pointerEvents: 'none' }}
                       >
                         {getFlavorIcon(flavor)}
                       </text>
