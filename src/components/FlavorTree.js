@@ -488,50 +488,41 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Create TRUE 1960s-style smooth flowing swirls */}
+          {/* Create ONE continuous smooth flowing swirl */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create organic flowing swirl using layered gradients with turbulence
+            // Single continuous smooth swirl with 3 colors
             return (
               <React.Fragment key={pattern.id}>
-                {/* Base swirling gradient layers */}
-                <radialGradient id={`${pattern.id}-layer1`} cx="50%" cy="50%">
+                {/* Single unified gradient with 3 colors */}
+                <radialGradient id={`${pattern.id}-unified`} cx="50%" cy="50%">
                   <stop offset="0%" stopColor={pattern.colors[0]} />
-                  <stop offset="33%" stopColor={pattern.colors[1]} />
-                  <stop offset="66%" stopColor={pattern.colors[2]} />
-                  <stop offset="100%" stopColor={pattern.colors[0]} />
-                </radialGradient>
-                
-                <radialGradient id={`${pattern.id}-layer2`} cx="30%" cy="30%">
-                  <stop offset="0%" stopColor={pattern.colors[1]} />
+                  <stop offset="25%" stopColor={pattern.colors[1]} />
                   <stop offset="50%" stopColor={pattern.colors[2]} />
-                  <stop offset="100%" stopColor={pattern.colors[0]} />
-                </radialGradient>
-                
-                <radialGradient id={`${pattern.id}-layer3`} cx="70%" cy="70%">
-                  <stop offset="0%" stopColor={pattern.colors[2]} />
-                  <stop offset="50%" stopColor={pattern.colors[0]} />
+                  <stop offset="75%" stopColor={pattern.colors[0]} />
                   <stop offset="100%" stopColor={pattern.colors[1]} />
                 </radialGradient>
                 
-                {/* Organic swirl distortion - PROPER settings for smooth flow */}
-                <filter id={`${pattern.id}-swirl`}>
+                {/* Smooth continuous swirl distortion */}
+                <filter id={`${pattern.id}-flow`}>
                   <feTurbulence 
                     type="fractalNoise" 
-                    baseFrequency="0.02" 
-                    numOctaves="4" 
+                    baseFrequency="0.025" 
+                    numOctaves="3" 
                     result="noise"
-                    seed="123"
+                    seed="777"
                   />
                   <feDisplacementMap 
                     in="SourceGraphic" 
                     in2="noise" 
-                    scale="40" 
+                    scale="50" 
                     xChannelSelector="R" 
                     yChannelSelector="G"
+                    result="displaced"
                   />
+                  <feGaussianBlur in="displaced" stdDeviation="3" />
                 </filter>
                 
                 <pattern 
@@ -539,15 +530,14 @@ const FlavorTree = ({ strainData }) => {
                   x="0" y="0" 
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
-                  viewBox="0 0 180 100"
                 >
-                  {/* Layer multiple offset gradients for organic swirl */}
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer1)`} filter={`url(#${pattern.id}-swirl)`} />
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer2)`} opacity="0.5" filter={`url(#${pattern.id}-swirl)`} />
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer3)`} opacity="0.5" filter={`url(#${pattern.id}-swirl)`} />
-                  
-                  {/* Smooth color blending overlay */}
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer1)`} opacity="0.3" />
+                  {/* Single continuous swirling layer */}
+                  <rect 
+                    width="180" 
+                    height="100" 
+                    fill={`url(#${pattern.id}-unified)`} 
+                    filter={`url(#${pattern.id}-flow)`}
+                  />
                 </pattern>
               </React.Fragment>
             );
@@ -714,15 +704,15 @@ const FlavorTree = ({ strainData }) => {
                 <g transform="translate(0, 0)">
                   {node.flavors.slice(0, 3).map((flavor, idx) => (
                     <g key={idx}>
-                      {/* Oval background for flavor icon */}
+                      {/* Oval background for flavor icon - more opaque to stand out from swirl */}
                       <ellipse
                         cx={(idx - 1) * 30}
                         cy={5}
                         rx={16}
                         ry={14}
-                        fill="rgba(255, 255, 255, 0.4)"
-                        stroke="rgba(255, 255, 255, 0.6)"
-                        strokeWidth="1"
+                        fill="rgba(255, 255, 255, 0.85)"
+                        stroke="rgba(255, 255, 255, 0.95)"
+                        strokeWidth="2"
                         style={{ pointerEvents: 'none' }}
                       />
                       <text
