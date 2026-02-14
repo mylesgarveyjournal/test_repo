@@ -488,73 +488,66 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Create TRUE rotating conic swirl - same pattern for all boxes */}
+          {/* Create TRUE 1960s-style smooth flowing swirls */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create PROPER conic gradient using angular mathematics
-            // Generate smooth rotating wedges that create a spiral effect
-            const segments = 360; // One per degree for ultra-smooth
-            const rotations = 4; // Number of complete color cycles (>360 deg)
-            
+            // Create organic flowing swirl using layered gradients with turbulence
             return (
               <React.Fragment key={pattern.id}>
+                {/* Base swirling gradient layers */}
+                <radialGradient id={`${pattern.id}-layer1`} cx="50%" cy="50%">
+                  <stop offset="0%" stopColor={pattern.colors[0]} />
+                  <stop offset="33%" stopColor={pattern.colors[1]} />
+                  <stop offset="66%" stopColor={pattern.colors[2]} />
+                  <stop offset="100%" stopColor={pattern.colors[0]} />
+                </radialGradient>
+                
+                <radialGradient id={`${pattern.id}-layer2`} cx="30%" cy="30%">
+                  <stop offset="0%" stopColor={pattern.colors[1]} />
+                  <stop offset="50%" stopColor={pattern.colors[2]} />
+                  <stop offset="100%" stopColor={pattern.colors[0]} />
+                </radialGradient>
+                
+                <radialGradient id={`${pattern.id}-layer3`} cx="70%" cy="70%">
+                  <stop offset="0%" stopColor={pattern.colors[2]} />
+                  <stop offset="50%" stopColor={pattern.colors[0]} />
+                  <stop offset="100%" stopColor={pattern.colors[1]} />
+                </radialGradient>
+                
+                {/* Organic swirl distortion - PROPER settings for smooth flow */}
+                <filter id={`${pattern.id}-swirl`}>
+                  <feTurbulence 
+                    type="fractalNoise" 
+                    baseFrequency="0.02" 
+                    numOctaves="4" 
+                    result="noise"
+                    seed="123"
+                  />
+                  <feDisplacementMap 
+                    in="SourceGraphic" 
+                    in2="noise" 
+                    scale="40" 
+                    xChannelSelector="R" 
+                    yChannelSelector="G"
+                  />
+                </filter>
+                
                 <pattern 
                   id={pattern.id}
                   x="0" y="0" 
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
+                  viewBox="0 0 180 100"
                 >
-                  <defs>
-                    {/* Create smooth color stops for blending */}
-                    <radialGradient id={`${pattern.id}-smoothing`} cx="50%" cy="50%">
-                      <stop offset="0%" stopColor="transparent" />
-                      <stop offset="70%" stopColor="transparent" />
-                      <stop offset="100%" stopColor="black" stopOpacity="0.1" />
-                    </radialGradient>
-                  </defs>
+                  {/* Layer multiple offset gradients for organic swirl */}
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer1)`} filter={`url(#${pattern.id}-swirl)`} />
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer2)`} opacity="0.5" filter={`url(#${pattern.id}-swirl)`} />
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer3)`} opacity="0.5" filter={`url(#${pattern.id}-swirl)`} />
                   
-                  <g transform="translate(90, 50)">
-                    {/* Create ultra-smooth conic gradient using thin wedges */}
-                    {Array.from({ length: segments }).map((_, i) => {
-                      const angle = (i / segments) * 360;
-                      const nextAngle = ((i + 1) / segments) * 360;
-                      
-                      // Calculate which color based on angle with multiple rotations
-                      const normalizedAngle = (angle * rotations) % 360;
-                      const colorPhase = normalizedAngle / 360;
-                      
-                      // Smooth interpolation between colors
-                      let color;
-                      if (colorPhase < 0.333) {
-                        color = pattern.colors[0];
-                      } else if (colorPhase < 0.666) {
-                        color = pattern.colors[1];
-                      } else {
-                        color = pattern.colors[2];
-                      }
-                      
-                      // Calculate wedge points
-                      const radius = 100;
-                      const x1 = Math.cos(angle * Math.PI / 180) * radius;
-                      const y1 = Math.sin(angle * Math.PI / 180) * radius;
-                      const x2 = Math.cos(nextAngle * Math.PI / 180) * radius;
-                      const y2 = Math.sin(nextAngle * Math.PI / 180) * radius;
-                      
-                      return (
-                        <path
-                          key={i}
-                          d={`M 0,0 L ${x1},${y1} L ${x2},${y2} Z`}
-                          fill={color}
-                          opacity="0.95"
-                        />
-                      );
-                    })}
-                    
-                    {/* Add subtle glow overlay for depth */}
-                    <circle cx="0" cy="0" r="100" fill={`url(#${pattern.id}-smoothing)`} />
-                  </g>
+                  {/* Smooth color blending overlay */}
+                  <rect width="180" height="100" fill={`url(#${pattern.id}-layer1)`} opacity="0.3" />
                 </pattern>
               </React.Fragment>
             );
