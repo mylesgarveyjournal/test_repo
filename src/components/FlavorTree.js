@@ -554,25 +554,14 @@ const FlavorTree = ({ strainData }) => {
             
             return (
               <React.Fragment key={pattern.id}>
-                {/* Clip path to exclude flavor oval area */}
-                <clipPath id={`${pattern.id}-clip`}>
-                  <rect x="0" y="0" width="180" height="100" />
-                  {/* Cut out three oval areas where flavor icons will be */}
-                  <ellipse cx="60" cy="25" rx="20" ry="18" />
-                  <ellipse cx="90" cy="25" rx="20" ry="18" />
-                  <ellipse cx="120" cy="25" rx="20" ry="18" />
-                </clipPath>
-                
                 <pattern 
                   id={pattern.id}
                   x="0" y="0" 
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  <g clipPath={`url(#${pattern.id}-clip)`}>
-                    <g transform="translate(90, 50)">
-                      {wedges}
-                    </g>
+                  <g transform="translate(90, 50)">
+                    {wedges}
                   </g>
                 </pattern>
               </React.Fragment>
@@ -740,19 +729,13 @@ const FlavorTree = ({ strainData }) => {
                 <g transform="translate(0, 0)">
                   {node.flavors.slice(0, 3).map((flavor, idx) => (
                     <g key={idx}>
-                      {/* Mini button-like oval background for flavor icons */}
-                      <defs>
-                        <radialGradient id={`icon-bg-${node.id}-${idx}`}>
-                          <stop offset="0%" stopColor="rgba(255, 255, 255, 0.95)" />
-                          <stop offset="100%" stopColor="rgba(240, 240, 240, 0.9)" />
-                        </radialGradient>
-                      </defs>
+                      {/* Solid oval background to cover swirl pattern */}
                       <ellipse
                         cx={(idx - 1) * 30}
                         cy={5}
                         rx={18}
                         ry={16}
-                        fill={`url(#icon-bg-${node.id}-${idx})`}
+                        fill="rgb(255, 255, 255)"
                         stroke="rgba(200, 200, 200, 0.8)"
                         strokeWidth="1.5"
                         style={{ pointerEvents: 'none', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.3))' }}
