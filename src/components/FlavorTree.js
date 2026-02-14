@@ -504,9 +504,12 @@ const FlavorTree = ({ strainData }) => {
             };
             
             // Create 180 thin wedges for ultra-smooth swirl (2 degrees each)
+            // ANNULAR (ring-shaped) to NOT overlap the flavor ovals in center
             const wedges = [];
             const numWedges = 180;
             const rotations = 3; // 3 complete color cycles
+            const innerRadius = 0; // Start from center
+            const outerRadius = 100; // Extend to edges
             
             for (let i = 0; i < numWedges; i++) {
               const angle = (i / numWedges) * 360;
@@ -527,15 +530,23 @@ const FlavorTree = ({ strainData }) => {
               
               const rad1 = angle * Math.PI / 180;
               const rad2 = nextAngle * Math.PI / 180;
-              const x1 = Math.cos(rad1) * 100;
-              const y1 = Math.sin(rad1) * 60;
-              const x2 = Math.cos(rad2) * 100;
-              const y2 = Math.sin(rad2) * 60;
+              
+              // Outer edge
+              const x1Out = Math.cos(rad1) * outerRadius;
+              const y1Out = Math.sin(rad1) * (outerRadius * 0.6); // Aspect ratio
+              const x2Out = Math.cos(rad2) * outerRadius;
+              const y2Out = Math.sin(rad2) * (outerRadius * 0.6);
+              
+              // Inner edge (creates annulus to avoid oval area)
+              const x1In = Math.cos(rad1) * innerRadius;
+              const y1In = Math.sin(rad1) * (innerRadius * 0.6);
+              const x2In = Math.cos(rad2) * innerRadius;
+              const y2In = Math.sin(rad2) * (innerRadius * 0.6);
               
               wedges.push(
                 <path
                   key={i}
-                  d={`M 0,0 L ${x1},${y1} L ${x2},${y2} Z`}
+                  d={`M ${x1In},${y1In} L ${x1Out},${y1Out} L ${x2Out},${y2Out} L ${x2In},${y2In} Z`}
                   fill={color}
                 />
               );
@@ -543,14 +554,25 @@ const FlavorTree = ({ strainData }) => {
             
             return (
               <React.Fragment key={pattern.id}>
+                {/* Clip path to exclude flavor oval area */}
+                <clipPath id={`${pattern.id}-clip`}>
+                  <rect x="0" y="0" width="180" height="100" />
+                  {/* Cut out three oval areas where flavor icons will be */}
+                  <ellipse cx="60" cy="25" rx="20" ry="18" />
+                  <ellipse cx="90" cy="25" rx="20" ry="18" />
+                  <ellipse cx="120" cy="25" rx="20" ry="18" />
+                </clipPath>
+                
                 <pattern 
                   id={pattern.id}
                   x="0" y="0" 
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  <g transform="translate(90, 50)">
-                    {wedges}
+                  <g clipPath={`url(#${pattern.id}-clip)`}>
+                    <g transform="translate(90, 50)">
+                      {wedges}
+                    </g>
                   </g>
                 </pattern>
               </React.Fragment>
