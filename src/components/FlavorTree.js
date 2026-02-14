@@ -493,51 +493,52 @@ const FlavorTree = ({ strainData }) => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create SILKY SMOOTH flowing swirl - organic, liquid, topological
+            // Create SILKY SMOOTH circular flowing swirl - organic, liquid, topological
             return (
               <React.Fragment key={pattern.id}>
-                {/* Base spiraling gradient */}
+                {/* Base spiraling gradient - circular not linear */}
                 <radialGradient id={`${pattern.id}-base`} cx="50%" cy="50%">
-                  <stop offset="0%" stopColor={pattern.colors[0]} />
-                  <stop offset="15%" stopColor={pattern.colors[1]} />
-                  <stop offset="30%" stopColor={pattern.colors[2]} />
-                  <stop offset="45%" stopColor={pattern.colors[0]} />
-                  <stop offset="60%" stopColor={pattern.colors[1]} />
-                  <stop offset="75%" stopColor={pattern.colors[2]} />
-                  <stop offset="90%" stopColor={pattern.colors[0]} />
-                  <stop offset="100%" stopColor={pattern.colors[1]} />
+                  <stop offset="0%" stopColor={pattern.colors[1]} />
+                  <stop offset="12%" stopColor={pattern.colors[0]} />
+                  <stop offset="24%" stopColor={pattern.colors[2]} />
+                  <stop offset="36%" stopColor={pattern.colors[1]} />
+                  <stop offset="48%" stopColor={pattern.colors[0]} />
+                  <stop offset="60%" stopColor={pattern.colors[2]} />
+                  <stop offset="72%" stopColor={pattern.colors[1]} />
+                  <stop offset="84%" stopColor={pattern.colors[0]} />
+                  <stop offset="100%" stopColor={pattern.colors[2]} />
                 </radialGradient>
                 
-                {/* Smooth flowing distortion filter */}
+                {/* Smooth flowing circular distortion filter */}
                 <filter id={`${pattern.id}-swirl`} x="-50%" y="-50%" width="200%" height="200%">
-                  {/* Very smooth turbulence for organic flow */}
+                  {/* Balanced turbulence for circular flow */}
                   <feTurbulence 
                     type="fractalNoise" 
-                    baseFrequency="0.008 0.012" 
-                    numOctaves="5" 
+                    baseFrequency="0.015" 
+                    numOctaves="6" 
                     result="turbulence"
-                    seed="7"
+                    seed="42"
                   />
-                  {/* Smooth displacement for liquid flow */}
+                  {/* Circular displacement for spiral flow */}
                   <feDisplacementMap 
                     in="SourceGraphic" 
                     in2="turbulence" 
-                    scale="80" 
+                    scale="60" 
                     xChannelSelector="R" 
-                    yChannelSelector="G"
+                    yChannelSelector="B"
                     result="displaced"
                   />
-                  {/* Blur for silky smooth edges */}
-                  <feGaussianBlur in="displaced" stdDeviation="2" result="blurred" />
-                  {/* Enhance colors */}
+                  {/* Light blur for smooth flow */}
+                  <feGaussianBlur in="displaced" stdDeviation="1.5" result="blurred" />
+                  {/* Color enhancement */}
                   <feColorMatrix 
                     in="blurred"
                     type="saturate" 
-                    values="1.3"
+                    values="1.4"
                     result="saturated"
                   />
-                  {/* Final smooth blend */}
-                  <feGaussianBlur in="saturated" stdDeviation="1" />
+                  {/* Final smoothing */}
+                  <feGaussianBlur in="saturated" stdDeviation="0.8" />
                 </filter>
                 
                 <pattern 
@@ -546,7 +547,7 @@ const FlavorTree = ({ strainData }) => {
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  {/* Apply smooth swirl */}
+                  {/* Apply smooth circular swirl */}
                   <rect width="180" height="100" fill={`url(#${pattern.id}-base)`} filter={`url(#${pattern.id}-swirl)`} />
                 </pattern>
               </React.Fragment>
