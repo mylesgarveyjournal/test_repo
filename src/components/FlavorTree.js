@@ -3,29 +3,6 @@ import dagre from 'dagre';
 import { mixFlavorColors, getStrainFlavors, getFlavorIcon, baseFlavorColors } from '../data/flavorProfile';
 import '../styles/FlavorTree.css';
 
-// Generate psychedelic swirl pattern for a node
-// All nodes use THE SAME swirl pattern, only colors differ
-const createPsychedelicPattern = (nodeId, flavors) => {
-  if (!flavors || flavors.length === 0) return null;
-  
-  // Get exactly 3 colors for the swirl
-  const colors = flavors.slice(0, 3).map(flavor => {
-    const colorData = baseFlavorColors[flavor];
-    if (!colorData) return 'rgb(200, 200, 200)';
-    return `rgb(${colorData.r}, ${colorData.g}, ${colorData.b})`;
-  });
-  
-  // Ensure we have exactly 3 colors
-  while (colors.length < 3) {
-    colors.push(colors[colors.length - 1]);
-  }
-  
-  return {
-    id: `swirl-${nodeId}`,
-    colors: colors
-  };
-};
-
 // Build graph structure: ONE node per unique strain, edges for parent-child relationships
 const buildGraphFromTree = (rootNode) => {
   const nodes = new Map(); // Map of id -> node data
@@ -486,88 +463,8 @@ const FlavorTree = ({ strainData }) => {
         height="100%"
         style={{ display: 'block' }}
       >
-        {/* Definitions - must be outside transform */}
+        {/* Definitions */}
         <defs>
-          {/* Create REAL smooth conic swirl - identical for all boxes */}
-          {visibleData.nodes.map(node => {
-            const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
-            if (!pattern) return null;
-            
-            // Function to interpolate between colors
-            const interpolateColor = (color1, color2, factor) => {
-              const c1 = color1.match(/\d+/g).map(Number);
-              const c2 = color2.match(/\d+/g).map(Number);
-              const r = Math.round(c1[0] + (c2[0] - c1[0]) * factor);
-              const g = Math.round(c1[1] + (c2[1] - c1[1]) * factor);
-              const b = Math.round(c1[2] + (c2[2] - c1[2]) * factor);
-              return `rgb(${r}, ${g}, ${b})`;
-            };
-            
-            // Create 180 thin wedges for ultra-smooth swirl (2 degrees each)
-            // ANNULAR (ring-shaped) to NOT overlap the flavor ovals in center
-            const wedges = [];
-            const numWedges = 180;
-            const rotations = 3; // 3 complete color cycles
-            const innerRadius = 0; // Start from center
-            const outerRadius = 100; // Extend to edges
-            
-            for (let i = 0; i < numWedges; i++) {
-              const angle = (i / numWedges) * 360;
-              const nextAngle = ((i + 1) / numWedges) * 360;
-              
-              // Position in color cycle
-              const cyclePosition = ((angle / 360) * rotations) % 1;
-              const colorPosition = cyclePosition * 3; // 0 to 3
-              
-              let color;
-              if (colorPosition < 1) {
-                color = interpolateColor(pattern.colors[0], pattern.colors[1], colorPosition);
-              } else if (colorPosition < 2) {
-                color = interpolateColor(pattern.colors[1], pattern.colors[2], colorPosition - 1);
-              } else {
-                color = interpolateColor(pattern.colors[2], pattern.colors[0], colorPosition - 2);
-              }
-              
-              const rad1 = angle * Math.PI / 180;
-              const rad2 = nextAngle * Math.PI / 180;
-              
-              // Outer edge
-              const x1Out = Math.cos(rad1) * outerRadius;
-              const y1Out = Math.sin(rad1) * (outerRadius * 0.6); // Aspect ratio
-              const x2Out = Math.cos(rad2) * outerRadius;
-              const y2Out = Math.sin(rad2) * (outerRadius * 0.6);
-              
-              // Inner edge (creates annulus to avoid oval area)
-              const x1In = Math.cos(rad1) * innerRadius;
-              const y1In = Math.sin(rad1) * (innerRadius * 0.6);
-              const x2In = Math.cos(rad2) * innerRadius;
-              const y2In = Math.sin(rad2) * (innerRadius * 0.6);
-              
-              wedges.push(
-                <path
-                  key={i}
-                  d={`M ${x1In},${y1In} L ${x1Out},${y1Out} L ${x2Out},${y2Out} L ${x2In},${y2In} Z`}
-                  fill={color}
-                />
-              );
-            }
-            
-            return (
-              <React.Fragment key={pattern.id}>
-                <pattern 
-                  id={pattern.id}
-                  x="0" y="0" 
-                  width="180" height="100"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <g transform="translate(90, 50)">
-                    {wedges}
-                  </g>
-                </pattern>
-              </React.Fragment>
-            );
-          })}
-          
           <filter id="drop-shadow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
             <feOffset dx="0" dy="2" result="offsetblur"/>
@@ -627,7 +524,6 @@ const FlavorTree = ({ strainData }) => {
           
           {/* Render nodes */}
           {visibleData.nodes.map(node => {
-            const patternId = `url(#swirl-${node.id})`;
             const isHidden = node.isHidden;
             
             const handleNodeInteraction = (e) => {
@@ -643,21 +539,14 @@ const FlavorTree = ({ strainData }) => {
                 style={{ transition: 'opacity 0.4s ease' }}
                 opacity={isHidden ? 0.15 : 1}
               >
-                <rect
+                {/* Use foreignObject with CSS conic-gradient instead of SVG pattern */}
+                <foreignObject
                   x={-width / 2}
                   y={-height / 2}
                   width={width}
                   height={height}
-                  rx={12}
-                  ry={12}
-                  fill={patternId}
-                  stroke="#1a5c36"
-                  strokeWidth={isHidden ? "2" : "3"}
-                  opacity="0.95"
-                  filter="url(#drop-shadow)"
                   onClick={handleNodeInteraction}
                   onTouchEnd={(e) => {
-                    // Only trigger if it was a tap, not a drag
                     const touchDuration = Date.now() - touchStartTime;
                     if (!touchMoved && touchDuration < 300) {
                       handleNodeInteraction(e);
@@ -665,10 +554,28 @@ const FlavorTree = ({ strainData }) => {
                   }}
                   style={{ 
                     cursor: 'pointer',
-                    transition: 'stroke-width 0.3s ease',
                     pointerEvents: 'all'
                   }}
-                />
+                >
+                  <div
+                    style={{
+                      width: '180px',
+                      height: '100px',
+                      borderRadius: '12px',
+                      border: isHidden ? '2px solid #1a5c36' : '3px solid #1a5c36',
+                      background: `conic-gradient(
+                        from 0deg at 50% 50%,
+                        ${node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow'} 0deg,
+                        ${node.flavors[1] ? `rgb(${baseFlavorColors[node.flavors[1]]?.r || 0}, ${baseFlavorColors[node.flavors[1]]?.g || 255}, ${baseFlavorColors[node.flavors[1]]?.b || 0})` : 'green'} 120deg,
+                        ${node.flavors[2] ? `rgb(${baseFlavorColors[node.flavors[2]]?.r || 0}, ${baseFlavorColors[node.flavors[2]]?.g || 0}, ${baseFlavorColors[node.flavors[2]]?.b || 255})` : 'blue'} 240deg,
+                        ${node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow'} 360deg
+                      )`,
+                      filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))',
+                      opacity: 0.95,
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </foreignObject>
                 
                 {/* White fade at bottom 1/5th of box */}
                 <defs>
