@@ -200,14 +200,14 @@ const FlavorTree = ({ strainData }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [touchDistance, setTouchDistance] = useState(0);
-  const [pinchCenter, setPinchCenter] = useState({ x: 0, y: 0 });
-  const [pinchStartZoom, setPinchStartZoom] = useState(0.7);
-  const [pinchStartPan, setPinchStartPan] = useState({ x: 0, y: 0 });
   const [hiddenNodes, setHiddenNodes] = useState(new Set());
   const [touchStartTime, setTouchStartTime] = useState(0);
   const [touchMoved, setTouchMoved] = useState(false);
   const containerRef = React.useRef(null);
   const svgRef = React.useRef(null);
+  
+  // Use refs for pinch start state - immediate access, no async state updates
+  const pinchStartRef = React.useRef({ zoom: 0.7, panX: 0, panY: 0, centerX: 0, centerY: 0, distance: 0 });
 
   // Build graph structure - ONE node per strain
   const graphData = useMemo(() => buildGraphFromTree(strainData), [strainData]);
@@ -277,14 +277,19 @@ const FlavorTree = ({ strainData }) => {
       // Only update if we're actually starting a new pinch (distance was 0)
       if (touchDistance === 0) {
         setTouchDistance(newDistance);
-        // Store pinch center as screen coordinates (relative to SVG)
+        // Store pinch start state in ref for immediate access
         const svgRect = svgRef.current.getBoundingClientRect();
         const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - svgRect.left;
         const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - svgRect.top;
         
-        setPinchCenter({ x: centerX, y: centerY });
-        setPinchStartZoom(zoom);
-        setPinchStartPan({ x: panX, y: panY });
+        pinchStartRef.current = {
+          zoom: zoom,
+          panX: panX,
+          panY: panY,
+          centerX: centerX,
+          centerY: centerY,
+          distance: newDistance
+        };
       }
     }
   };
@@ -295,24 +300,23 @@ const FlavorTree = ({ strainData }) => {
     setTouchMoved(true);
     
     if (e.touches.length === 2 && touchDistance > 0) {
-      // Pinch zoom - smooth incremental zoom
+      // Pinch zoom - smooth incremental zoom using cached start state
       setIsDragging(false);
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const newDistance = Math.sqrt(dx * dx + dy * dy);
-      const zoomRatio = newDistance / touchDistance;
+      const zoomRatio = newDistance / pinchStartRef.current.distance;
       
       // Calculate new zoom
-      const newZoom = Math.max(0.2, Math.min(3, pinchStartZoom * zoomRatio));
+      const newZoom = Math.max(0.2, Math.min(3, pinchStartRef.current.zoom * zoomRatio));
       
       // Calculate pan to keep pinch center fixed in screen space
       // worldPoint = (screenPoint - pan) / zoom
-      // Keep worldPoint constant: (pinchCenter - pinchStartPan) / pinchStartZoom = (pinchCenter - newPan) / newZoom
-      const worldX = (pinchCenter.x - pinchStartPan.x) / pinchStartZoom;
-      const worldY = (pinchCenter.y - pinchStartPan.y) / pinchStartZoom;
+      const worldX = (pinchStartRef.current.centerX - pinchStartRef.current.panX) / pinchStartRef.current.zoom;
+      const worldY = (pinchStartRef.current.centerY - pinchStartRef.current.panY) / pinchStartRef.current.zoom;
       
-      setPanX(pinchCenter.x - worldX * newZoom);
-      setPanY(pinchCenter.y - worldY * newZoom);
+      setPanX(pinchStartRef.current.centerX - worldX * newZoom);
+      setPanY(pinchStartRef.current.centerY - worldY * newZoom);
       setZoom(newZoom);
     } else if (e.touches.length === 1 && isDragging) {
       // Pan
