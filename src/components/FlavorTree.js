@@ -562,7 +562,7 @@ const FlavorTree = ({ strainData }) => {
                       width: '180px',
                       height: '100px',
                       borderRadius: '12px',
-                      border: isHidden ? '2px solid #1a5c36' : '3px solid #1a5c36',
+                      border: 'none',
                       background: (() => {
                         // Create smooth flowing swirl with multiple color rotations
                         const c1 = node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow';
