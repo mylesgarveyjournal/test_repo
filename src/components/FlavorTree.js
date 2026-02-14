@@ -488,15 +488,54 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Single universal swirl pattern - create gradients for each color combo */}
+          {/* Create identical swirl pattern for all boxes - only colors differ */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create THE SAME conic-style swirl for ALL boxes using overlapping linear gradients
+            // Mathematical swirl pattern: conic gradient simulation
+            // Creates smooth color rotation around center point with multiple rotations (>360 deg)
+            const numWedges = 120; // High number for smooth gradient
+            const rotations = 3; // Number of complete color cycles
+            const wedges = [];
+            
+            for (let i = 0; i < numWedges; i++) {
+              const angle = (i / numWedges) * 360;
+              const nextAngle = ((i + 1) / numWedges) * 360;
+              
+              // Calculate position in color cycle (0 to 1, repeating 'rotations' times)
+              const position = (i / numWedges) * rotations;
+              const colorPhase = position % 1; // 0 to 1 within current cycle
+              
+              // Determine which color to use based on position in cycle
+              // Smoothly transition: color0 -> color1 -> color2 -> color0
+              let color;
+              if (colorPhase < 0.33) {
+                color = pattern.colors[0];
+              } else if (colorPhase < 0.66) {
+                color = pattern.colors[1];
+              } else {
+                color = pattern.colors[2];
+              }
+              
+              // Create wedge path
+              const x1 = Math.cos(angle * Math.PI / 180) * 100;
+              const y1 = Math.sin(angle * Math.PI / 180) * 100;
+              const x2 = Math.cos(nextAngle * Math.PI / 180) * 100;
+              const y2 = Math.sin(nextAngle * Math.PI / 180) * 100;
+              
+              wedges.push(
+                <path
+                  key={i}
+                  d={`M 0,0 L ${x1},${y1} A 100,100 0 0,1 ${x2},${y2} Z`}
+                  fill={color}
+                  opacity="0.9"
+                />
+              );
+            }
+            
             return (
               <React.Fragment key={pattern.id}>
-                {/* Create the swirl using 12 wedge segments rotating around */}
                 <pattern 
                   id={pattern.id}
                   x="0" y="0" 
@@ -504,32 +543,17 @@ const FlavorTree = ({ strainData }) => {
                   patternUnits="userSpaceOnUse"
                 >
                   <g transform="translate(90, 50)">
-                    {/* Create 12 wedges for a smooth spiral, cycling through 3 colors 4 times (>360 deg) */}
-                    {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => {
-                      const angle = i * 30; // 30 degrees each wedge
-                      const colorIndex = i % 3; // Cycle through 3 colors: 0,1,2,0,1,2,0,1,2,0,1,2
-                      const color = pattern.colors[colorIndex];
-                      
-                      return (
-                        <path
-                          key={i}
-                          d="M 0,0 L 0,-80 A 80,80 0 0,1 40,-69.28 Z"
-                          fill={color}
-                          opacity="0.85"
-                          transform={`rotate(${angle})`}
-                        />
-                      );
-                    })}
+                    {wedges}
                     
-                    {/* Add center gradient for depth */}
+                    {/* Center glow for depth */}
                     <defs>
-                      <radialGradient id={`${pattern.id}-center`}>
-                        <stop offset="0%" stopColor={pattern.colors[1]} stopOpacity="0.6" />
-                        <stop offset="60%" stopColor={pattern.colors[2]} stopOpacity="0.3" />
+                      <radialGradient id={`${pattern.id}-glow`}>
+                        <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+                        <stop offset="50%" stopColor={pattern.colors[1]} stopOpacity="0.2" />
                         <stop offset="100%" stopColor="transparent" />
                       </radialGradient>
                     </defs>
-                    <circle cx="0" cy="0" r="30" fill={`url(#${pattern.id}-center)`} />
+                    <circle cx="0" cy="0" r="35" fill={`url(#${pattern.id}-glow)`} />
                   </g>
                 </pattern>
               </React.Fragment>
