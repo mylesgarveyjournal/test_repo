@@ -275,14 +275,18 @@ const FlavorTree = ({ strainData }) => {
       // Only update if we're actually starting a new pinch (distance was 0)
       if (touchDistance === 0) {
         setTouchDistance(newDistance);
-        // Store pinch center in SVG coordinates relative to current view
+        // Calculate pinch center in WORLD coordinates (stays fixed during pinch)
         const svgRect = svgRef.current.getBoundingClientRect();
-        const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-        const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-        setPinchCenter({
-          x: centerX - svgRect.left,
-          y: centerY - svgRect.top
-        });
+        const screenCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const screenCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        const svgX = screenCenterX - svgRect.left;
+        const svgY = screenCenterY - svgRect.top;
+        
+        // Convert to world coordinates using current transform
+        const worldX = (svgX - panX) / zoom;
+        const worldY = (svgY - panY) / zoom;
+        
+        setPinchCenter({ x: worldX, y: worldY });
       }
     }
   };
@@ -303,13 +307,16 @@ const FlavorTree = ({ strainData }) => {
       // Calculate new zoom with smooth incremental changes
       const newZoom = Math.max(0.2, Math.min(3, zoom * zoomFactor));
       
-      // Convert pinch center from screen to world coordinates
-      const worldX = (pinchCenter.x - panX) / zoom;
-      const worldY = (pinchCenter.y - panY) / zoom;
+      // Get current screen position of pinch center
+      const svgRect = svgRef.current.getBoundingClientRect();
+      const screenCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const screenCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      const svgX = screenCenterX - svgRect.left;
+      const svgY = screenCenterY - svgRect.top;
       
-      // Adjust pan to keep pinch center fixed in world space
-      setPanX(pinchCenter.x - worldX * newZoom);
-      setPanY(pinchCenter.y - worldY * newZoom);
+      // pinchCenter contains world coordinates - keep them at this screen position
+      setPanX(svgX - pinchCenter.x * newZoom);
+      setPanY(svgY - pinchCenter.y * newZoom);
       setZoom(newZoom);
       
       setTouchDistance(newDistance);
