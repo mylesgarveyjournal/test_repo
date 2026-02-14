@@ -488,55 +488,70 @@ const FlavorTree = ({ strainData }) => {
       >
         {/* Definitions - must be outside transform */}
         <defs>
-          {/* Create uniform swirl using linear gradient convergence - PREDICTABLE and CLEAN */}
+          {/* Create REAL smooth conic swirl - identical for all boxes */}
           {visibleData.nodes.map(node => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create 6 linear gradients rotating around center for smooth conic effect
-            const gradients = [];
-            for (let i = 0; i < 6; i++) {
-              const angle = i * 60; // 60 degrees apart
-              const colorIndex = i % 3;
-              const nextColorIndex = (i + 1) % 3;
+            // Function to interpolate between colors
+            const interpolateColor = (color1, color2, factor) => {
+              const c1 = color1.match(/\d+/g).map(Number);
+              const c2 = color2.match(/\d+/g).map(Number);
+              const r = Math.round(c1[0] + (c2[0] - c1[0]) * factor);
+              const g = Math.round(c1[1] + (c2[1] - c1[1]) * factor);
+              const b = Math.round(c1[2] + (c2[2] - c1[2]) * factor);
+              return `rgb(${r}, ${g}, ${b})`;
+            };
+            
+            // Create 180 thin wedges for ultra-smooth swirl (2 degrees each)
+            const wedges = [];
+            const numWedges = 180;
+            const rotations = 3; // 3 complete color cycles
+            
+            for (let i = 0; i < numWedges; i++) {
+              const angle = (i / numWedges) * 360;
+              const nextAngle = ((i + 1) / numWedges) * 360;
               
-              gradients.push(
-                <linearGradient 
-                  key={`grad-${i}`}
-                  id={`${pattern.id}-grad${i}`} 
-                  gradientTransform={`rotate(${angle} 0.5 0.5)`}
-                >
-                  <stop offset="0%" stopColor={pattern.colors[colorIndex]} />
-                  <stop offset="100%" stopColor={pattern.colors[nextColorIndex]} />
-                </linearGradient>
+              // Position in color cycle
+              const cyclePosition = ((angle / 360) * rotations) % 1;
+              const colorPosition = cyclePosition * 3; // 0 to 3
+              
+              let color;
+              if (colorPosition < 1) {
+                color = interpolateColor(pattern.colors[0], pattern.colors[1], colorPosition);
+              } else if (colorPosition < 2) {
+                color = interpolateColor(pattern.colors[1], pattern.colors[2], colorPosition - 1);
+              } else {
+                color = interpolateColor(pattern.colors[2], pattern.colors[0], colorPosition - 2);
+              }
+              
+              const rad1 = angle * Math.PI / 180;
+              const rad2 = nextAngle * Math.PI / 180;
+              const x1 = Math.cos(rad1) * 100;
+              const y1 = Math.sin(rad1) * 60;
+              const x2 = Math.cos(rad2) * 100;
+              const y2 = Math.sin(rad2) * 60;
+              
+              wedges.push(
+                <path
+                  key={i}
+                  d={`M 0,0 L ${x1},${y1} L ${x2},${y2} Z`}
+                  fill={color}
+                />
               );
             }
             
             return (
               <React.Fragment key={pattern.id}>
-                {gradients}
-                
-                {/* Central radial for smooth blending */}
-                <radialGradient id={`${pattern.id}-center`}>
-                  <stop offset="0%" stopColor={pattern.colors[0]} stopOpacity="0.8" />
-                  <stop offset="50%" stopColor={pattern.colors[1]} stopOpacity="0.6" />
-                  <stop offset="100%" stopColor={pattern.colors[2]} stopOpacity="0.4" />
-                </radialGradient>
-                
                 <pattern 
                   id={pattern.id}
                   x="0" y="0" 
                   width="180" height="100"
                   patternUnits="userSpaceOnUse"
                 >
-                  {/* Layer the gradients for smooth conic effect - STAYS INSIDE BOX */}
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad0)`} opacity="0.5" />
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad1)`} opacity="0.5" />
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad2)`} opacity="0.5" />
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad3)`} opacity="0.5" />
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad4)`} opacity="0.5" />
-                  <rect width="180" height="100" fill={`url(#${pattern.id}-grad5)`} opacity="0.5" />
-                  <circle cx="90" cy="50" r="70" fill={`url(#${pattern.id}-center)`} />
+                  <g transform="translate(90, 50)">
+                    {wedges}
+                  </g>
                 </pattern>
               </React.Fragment>
             );
