@@ -270,15 +270,20 @@ const FlavorTree = ({ strainData }) => {
       setIsDragging(false); // Stop dragging when starting pinch
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
-      setTouchDistance(Math.sqrt(dx * dx + dy * dy));
-      // Store pinch center in SVG coordinates relative to current view
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      setPinchCenter({
-        x: centerX - svgRect.left,
-        y: centerY - svgRect.top
-      });
+      const newDistance = Math.sqrt(dx * dx + dy * dy);
+      
+      // Only update if we're actually starting a new pinch (distance was 0)
+      if (touchDistance === 0) {
+        setTouchDistance(newDistance);
+        // Store pinch center in SVG coordinates relative to current view
+        const svgRect = svgRef.current.getBoundingClientRect();
+        const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        setPinchCenter({
+          x: centerX - svgRect.left,
+          y: centerY - svgRect.top
+        });
+      }
     }
   };
 
@@ -568,11 +573,13 @@ const FlavorTree = ({ strainData }) => {
                     style={{
                       width: '180px',
                       height: '100px',
+                      borderRadius: '12px',
                       border: 'none',
                       outline: 'none',
                       margin: 0,
                       padding: 0,
                       boxShadow: 'none',
+                      overflow: 'hidden',
                       background: (() => {
                         // Create smooth flowing swirl with multiple color rotations
                         const c1 = node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow';
@@ -629,22 +636,6 @@ const FlavorTree = ({ strainData }) => {
                     ))}
                   </div>
                 </foreignObject>
-                
-                {/* White fade at bottom 1/5th of box */}
-                <defs>
-                  <linearGradient id={`fade-${node.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="white" stopOpacity="0" />
-                    <stop offset="100%" stopColor="white" stopOpacity="0.95" />
-                  </linearGradient>
-                </defs>
-                <rect
-                  x={-width / 2}
-                  y={height / 2 - 20}
-                  width={width}
-                  height={20}
-                  fill={`url(#fade-${node.id})`}
-                  style={{ pointerEvents: 'none' }}
-                />
                 
                 {/* Toggle indicator */}
                 <circle
