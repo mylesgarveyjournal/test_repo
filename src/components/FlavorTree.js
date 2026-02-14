@@ -493,48 +493,79 @@ const FlavorTree = ({ strainData }) => {
             const pattern = createPsychedelicPattern(node.id, node.flavors.slice(0, 3));
             if (!pattern) return null;
             
-            // Create THE SAME swirl pattern for all boxes using multiple rotated linear gradients
-            // This creates a conic/swirl effect by layering gradients at different angles
+            // Create THE SAME swirl pattern for all boxes - a proper psychedelic swirl
             return (
               <React.Fragment key={pattern.id}>
-                {/* Create multiple linear gradients rotated at different angles for swirl effect */}
-                <linearGradient id={`${pattern.id}-0`} gradientTransform="rotate(0 0.5 0.5)">
-                  <stop offset="0%" stopColor={pattern.colors[0]} />
-                  <stop offset="33%" stopColor={pattern.colors[1]} />
-                  <stop offset="66%" stopColor={pattern.colors[2]} />
-                  <stop offset="100%" stopColor={pattern.colors[0]} />
-                </linearGradient>
-                <linearGradient id={`${pattern.id}-60`} gradientTransform="rotate(60 0.5 0.5)">
-                  <stop offset="0%" stopColor={pattern.colors[1]} />
-                  <stop offset="33%" stopColor={pattern.colors[2]} />
-                  <stop offset="66%" stopColor={pattern.colors[0]} />
-                  <stop offset="100%" stopColor={pattern.colors[1]} />
-                </linearGradient>
-                <linearGradient id={`${pattern.id}-120`} gradientTransform="rotate(120 0.5 0.5)">
-                  <stop offset="0%" stopColor={pattern.colors[2]} />
-                  <stop offset="33%" stopColor={pattern.colors[0]} />
-                  <stop offset="66%" stopColor={pattern.colors[1]} />
-                  <stop offset="100%" stopColor={pattern.colors[2]} />
-                </linearGradient>
-                
-                {/* Combine gradients in a pattern for the swirl effect */}
                 <pattern 
                   id={pattern.id}
                   x="0" y="0" 
-                  width="1" height="1"
-                  patternUnits="objectBoundingBox"
+                  width="180" height="100"
+                  patternUnits="userSpaceOnUse"
                 >
-                  <rect width="100%" height="100%" fill={`url(#${pattern.id}-0)`} />
-                  <rect width="100%" height="100%" fill={`url(#${pattern.id}-60)`} opacity="0.7" />
-                  <rect width="100%" height="100%" fill={`url(#${pattern.id}-120)`} opacity="0.7" />
+                  {/* Create swirl using multiple rotated wedge shapes */}
+                  <rect width="180" height="100" fill={pattern.colors[0]} />
                   
-                  {/* Add radial burst for more psychedelic effect */}
-                  <radialGradient id={`${pattern.id}-radial`}>
-                    <stop offset="0%" stopColor={pattern.colors[1]} stopOpacity="0.6" />
-                    <stop offset="50%" stopColor={pattern.colors[2]} stopOpacity="0.4" />
-                    <stop offset="100%" stopColor={pattern.colors[0]} stopOpacity="0.2" />
-                  </radialGradient>
-                  <circle cx="50%" cy="50%" r="70%" fill={`url(#${pattern.id}-radial)`} />
+                  {/* Swirl wedges - creating a pinwheel/spiral effect */}
+                  <g transform="translate(90, 50)">
+                    {/* Wedge 1 - Color 1 */}
+                    <path 
+                      d="M 0,0 L 80,-40 A 90,90 0 0,1 80,40 Z" 
+                      fill={pattern.colors[1]}
+                      opacity="0.9"
+                    />
+                    {/* Wedge 2 - Color 2 */}
+                    <path 
+                      d="M 0,0 L 80,40 A 90,90 0 0,1 -40,80 Z" 
+                      fill={pattern.colors[2]}
+                      opacity="0.9"
+                    />
+                    {/* Wedge 3 - Color 0 */}
+                    <path 
+                      d="M 0,0 L -40,80 A 90,90 0 0,1 -80,-40 Z" 
+                      fill={pattern.colors[0]}
+                      opacity="0.85"
+                    />
+                    {/* Wedge 4 - Color 1 again */}
+                    <path 
+                      d="M 0,0 L -80,-40 A 90,90 0 0,1 40,-80 Z" 
+                      fill={pattern.colors[1]}
+                      opacity="0.85"
+                    />
+                    {/* Wedge 5 - Color 2 again */}
+                    <path 
+                      d="M 0,0 L 40,-80 A 90,90 0 0,1 80,-40 Z" 
+                      fill={pattern.colors[2]}
+                      opacity="0.8"
+                    />
+                    
+                    {/* Inner swirl for depth */}
+                    <circle cx="0" cy="0" r="35" fill={pattern.colors[1]} opacity="0.6" />
+                    <path 
+                      d="M 0,0 L 30,-15 A 35,35 0 0,1 30,15 Z" 
+                      fill={pattern.colors[2]}
+                      opacity="0.7"
+                    />
+                    <path 
+                      d="M 0,0 L 30,15 A 35,35 0 0,1 -15,30 Z" 
+                      fill={pattern.colors[0]}
+                      opacity="0.7"
+                    />
+                    <path 
+                      d="M 0,0 L -15,30 A 35,35 0 0,1 -30,-15 Z" 
+                      fill={pattern.colors[1]}
+                      opacity="0.7"
+                    />
+                    <path 
+                      d="M 0,0 L -30,-15 A 35,35 0 0,1 15,-30 Z" 
+                      fill={pattern.colors[2]}
+                      opacity="0.7"
+                    />
+                    <path 
+                      d="M 0,0 L 15,-30 A 35,35 0 0,1 30,-15 Z" 
+                      fill={pattern.colors[0]}
+                      opacity="0.7"
+                    />
+                  </g>
                 </pattern>
               </React.Fragment>
             );
