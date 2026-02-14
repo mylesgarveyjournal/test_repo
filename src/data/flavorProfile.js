@@ -1,23 +1,24 @@
 // Base flavor colors (RGB with alpha for mixing)
+// Colors chosen for MAXIMUM distance - spread evenly across color spectrum
 const baseFlavorColors = {
-  'Orange': { r: 255, g: 140, b: 0, hsl: 'hsl(33, 100%, 50%)' },
-  'Citrus': { r: 255, g: 200, b: 0, hsl: 'hsl(47, 100%, 50%)' },
-  'Tangerine': { r: 255, g: 130, b: 0, hsl: 'hsl(31, 100%, 50%)' },
-  'Mango': { r: 255, g: 165, b: 0, hsl: 'hsl(39, 100%, 50%)' },
-  'Lemon': { r: 255, g: 240, b: 0, hsl: 'hsl(56, 100%, 50%)' },
-  'Sweet': { r: 255, g: 105, b: 180, hsl: 'hsl(330, 100%, 71%)' },
-  'Skunk': { r: 101, g: 67, b: 33, hsl: 'hsl(30, 51%, 26%)' },
-  'Earthy': { r: 101, g: 67, b: 33, hsl: 'hsl(30, 51%, 26%)' },
-  'Pungent': { r: 128, g: 100, b: 0, hsl: 'hsl(47, 100%, 25%)' },
-  'Pine': { r: 34, g: 139, b: 34, hsl: 'hsl(120, 61%, 34%)' },
-  'Spicy': { r: 220, g: 20, b: 60, hsl: 'hsl(349, 83%, 47%)' },
-  'Grape': { r: 128, g: 0, b: 128, hsl: 'hsl(300, 100%, 25%)' },
-  'Berry': { r: 199, g: 21, b: 133, hsl: 'hsl(322, 81%, 43%)' },
-  'Punch': { r: 178, g: 34, b: 34, hsl: 'hsl(0, 68%, 42%)' },
-  'Fresh': { r: 144, g: 238, b: 144, hsl: 'hsl(120, 73%, 75%)' },
-  'Diesel': { r: 139, g: 69, b: 19, hsl: 'hsl(25, 76%, 31%)' },
-  'Chemical': { r: 150, g: 150, b: 150, hsl: 'hsl(0, 0%, 59%)' },
-  'Fruity': { r: 255, g: 105, b: 180, hsl: 'hsl(330, 100%, 71%)' }
+  'Orange': { r: 255, g: 140, b: 0, hsl: 'hsl(33, 100%, 50%)' },        // Orange 33°
+  'Citrus': { r: 255, g: 255, b: 0, hsl: 'hsl(60, 100%, 50%)' },        // Yellow 60°
+  'Tangerine': { r: 255, g: 85, b: 0, hsl: 'hsl(20, 100%, 50%)' },      // Red-Orange 20°
+  'Mango': { r: 255, g: 200, b: 0, hsl: 'hsl(47, 100%, 50%)' },         // Gold 47°
+  'Lemon': { r: 200, g: 255, b: 0, hsl: 'hsl(73, 100%, 50%)' },         // Chartreuse 73°
+  'Sweet': { r: 255, g: 0, b: 128, hsl: 'hsl(330, 100%, 50%)' },        // Hot Pink 330°
+  'Skunk': { r: 128, g: 255, b: 0, hsl: 'hsl(90, 100%, 50%)' },         // Lime 90°
+  'Earthy': { r: 128, g: 64, b: 0, hsl: 'hsl(30, 100%, 25%)' },         // Brown 30°
+  'Pungent': { r: 255, g: 0, b: 255, hsl: 'hsl(300, 100%, 50%)' },      // Magenta 300°
+  'Pine': { r: 0, g: 200, b: 100, hsl: 'hsl(150, 100%, 39%)' },         // Emerald 150°
+  'Spicy': { r: 255, g: 0, b: 0, hsl: 'hsl(0, 100%, 50%)' },            // Red 0°
+  'Grape': { r: 128, g: 0, b: 255, hsl: 'hsl(270, 100%, 50%)' },        // Purple 270°
+  'Berry': { r: 200, g: 0, b: 100, hsl: 'hsl(330, 100%, 39%)' },        // Berry 330°
+  'Punch': { r: 255, g: 0, b: 64, hsl: 'hsl(345, 100%, 50%)' },         // Crimson 345°
+  'Fresh': { r: 0, g: 255, b: 128, hsl: 'hsl(150, 100%, 50%)' },        // Spring Green 150°
+  'Diesel': { r: 0, g: 128, b: 255, hsl: 'hsl(210, 100%, 50%)' },       // Azure 210°
+  'Chemical': { r: 0, g: 255, b: 255, hsl: 'hsl(180, 100%, 50%)' },     // Cyan 180°
+  'Fruity': { r: 255, g: 64, b: 200, hsl: 'hsl(317, 100%, 63%)' }       // Pink 317°
 };
 
 // Flavor to emoji/icon mapping
