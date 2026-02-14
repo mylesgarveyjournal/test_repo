@@ -572,9 +572,37 @@ const FlavorTree = ({ strainData }) => {
                       )`,
                       filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))',
                       opacity: 0.95,
-                      boxSizing: 'border-box'
+                      boxSizing: 'border-box',
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '12px',
+                      paddingTop: '10px'
                     }}
-                  />
+                  >
+                    {/* Flavor ovals as HTML elements on top of gradient */}
+                    {node.flavors.slice(0, 3).map((flavor, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          width: '36px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          backgroundColor: 'white',
+                          border: '1.5px solid rgba(200, 200, 200, 0.8)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '22px',
+                          filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.3))',
+                          userSelect: 'none'
+                        }}
+                      >
+                        {getFlavorIcon(flavor)}
+                      </div>
+                    ))}
+                  </div>
                 </foreignObject>
                 
                 {/* White fade at bottom 1/5th of box */}
@@ -632,33 +660,6 @@ const FlavorTree = ({ strainData }) => {
                 >
                   {node.name}
                 </text>
-                
-                <g transform="translate(0, 0)">
-                  {node.flavors.slice(0, 3).map((flavor, idx) => (
-                    <g key={idx}>
-                      {/* Solid oval background to cover swirl pattern */}
-                      <ellipse
-                        cx={(idx - 1) * 30}
-                        cy={5}
-                        rx={18}
-                        ry={16}
-                        fill="rgb(255, 255, 255)"
-                        stroke="rgba(200, 200, 200, 0.8)"
-                        strokeWidth="1.5"
-                        style={{ pointerEvents: 'none', filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.3))' }}
-                      />
-                      <text
-                        fontSize="22"
-                        textAnchor="middle"
-                        x={(idx - 1) * 30}
-                        y="5"
-                        style={{ pointerEvents: 'none' }}
-                      >
-                        {getFlavorIcon(flavor)}
-                      </text>
-                    </g>
-                  ))}
-                </g>
                 
                 <text
                   fill="#1a5c36"
