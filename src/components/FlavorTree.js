@@ -563,13 +563,29 @@ const FlavorTree = ({ strainData }) => {
                       height: '100px',
                       borderRadius: '12px',
                       border: isHidden ? '2px solid #1a5c36' : '3px solid #1a5c36',
-                      background: `conic-gradient(
-                        from 0deg at 50% 50%,
-                        ${node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow'} 0deg,
-                        ${node.flavors[1] ? `rgb(${baseFlavorColors[node.flavors[1]]?.r || 0}, ${baseFlavorColors[node.flavors[1]]?.g || 255}, ${baseFlavorColors[node.flavors[1]]?.b || 0})` : 'green'} 120deg,
-                        ${node.flavors[2] ? `rgb(${baseFlavorColors[node.flavors[2]]?.r || 0}, ${baseFlavorColors[node.flavors[2]]?.g || 0}, ${baseFlavorColors[node.flavors[2]]?.b || 255})` : 'blue'} 240deg,
-                        ${node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow'} 360deg
-                      )`,
+                      background: (() => {
+                        // Create smooth flowing swirl with multiple color rotations
+                        const c1 = node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow';
+                        const c2 = node.flavors[1] ? `rgb(${baseFlavorColors[node.flavors[1]]?.r || 0}, ${baseFlavorColors[node.flavors[1]]?.g || 255}, ${baseFlavorColors[node.flavors[1]]?.b || 0})` : 'green';
+                        const c3 = node.flavors[2] ? `rgb(${baseFlavorColors[node.flavors[2]]?.r || 0}, ${baseFlavorColors[node.flavors[2]]?.g || 0}, ${baseFlavorColors[node.flavors[2]]?.b || 255})` : 'blue';
+                        
+                        return `conic-gradient(
+                          from 0deg at 50% 50%,
+                          ${c1} 0deg,
+                          ${c2} 30deg,
+                          ${c3} 60deg,
+                          ${c1} 90deg,
+                          ${c2} 120deg,
+                          ${c3} 150deg,
+                          ${c1} 180deg,
+                          ${c2} 210deg,
+                          ${c3} 240deg,
+                          ${c1} 270deg,
+                          ${c2} 300deg,
+                          ${c3} 330deg,
+                          ${c1} 360deg
+                        )`;
+                      })(),
                       filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.3))',
                       opacity: 0.95,
                       boxSizing: 'border-box',
