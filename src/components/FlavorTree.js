@@ -586,26 +586,26 @@ const FlavorTree = ({ strainData }) => {
                       boxShadow: 'none',
                       overflow: 'hidden',
                       background: (() => {
-                        // Create smooth flowing swirl with multiple color rotations
+                        // Psychedelic swirl using ONLY the 3 flavor colors
                         const c1 = node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow';
                         const c2 = node.flavors[1] ? `rgb(${baseFlavorColors[node.flavors[1]]?.r || 0}, ${baseFlavorColors[node.flavors[1]]?.g || 255}, ${baseFlavorColors[node.flavors[1]]?.b || 0})` : 'green';
                         const c3 = node.flavors[2] ? `rgb(${baseFlavorColors[node.flavors[2]]?.r || 0}, ${baseFlavorColors[node.flavors[2]]?.g || 0}, ${baseFlavorColors[node.flavors[2]]?.b || 255})` : 'blue';
                         
+                        // Create swirling pattern with only pure colors (no intermediate blends)
                         return `conic-gradient(
                           from 0deg at 50% 50%,
-                          ${c1} 0deg,
-                          ${c2} 30deg,
-                          ${c3} 60deg,
-                          ${c1} 90deg,
-                          ${c2} 120deg,
-                          ${c3} 150deg,
-                          ${c1} 180deg,
-                          ${c2} 210deg,
-                          ${c3} 240deg,
-                          ${c1} 270deg,
-                          ${c2} 300deg,
-                          ${c3} 330deg,
-                          ${c1} 360deg
+                          ${c1} 0deg, ${c1} 30deg,
+                          ${c2} 30deg, ${c2} 60deg,
+                          ${c3} 60deg, ${c3} 90deg,
+                          ${c1} 90deg, ${c1} 120deg,
+                          ${c2} 120deg, ${c2} 150deg,
+                          ${c3} 150deg, ${c3} 180deg,
+                          ${c1} 180deg, ${c1} 210deg,
+                          ${c2} 210deg, ${c2} 240deg,
+                          ${c3} 240deg, ${c3} 270deg,
+                          ${c1} 270deg, ${c1} 300deg,
+                          ${c2} 300deg, ${c2} 330deg,
+                          ${c3} 330deg, ${c3} 360deg
                         )`;
                       })(),
                       boxSizing: 'border-box',
