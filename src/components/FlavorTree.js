@@ -586,27 +586,21 @@ const FlavorTree = ({ strainData }) => {
                       boxShadow: 'none',
                       overflow: 'hidden',
                       background: (() => {
-                        // Psychedelic swirl using ONLY the 3 flavor colors
+                        // Soft cloudy blend of the 3 flavor colors
                         const c1 = node.flavors[0] ? `rgb(${baseFlavorColors[node.flavors[0]]?.r || 255}, ${baseFlavorColors[node.flavors[0]]?.g || 255}, ${baseFlavorColors[node.flavors[0]]?.b || 0})` : 'yellow';
                         const c2 = node.flavors[1] ? `rgb(${baseFlavorColors[node.flavors[1]]?.r || 0}, ${baseFlavorColors[node.flavors[1]]?.g || 255}, ${baseFlavorColors[node.flavors[1]]?.b || 0})` : 'green';
                         const c3 = node.flavors[2] ? `rgb(${baseFlavorColors[node.flavors[2]]?.r || 0}, ${baseFlavorColors[node.flavors[2]]?.g || 0}, ${baseFlavorColors[node.flavors[2]]?.b || 255})` : 'blue';
                         
-                        // Create swirling pattern with only pure colors (no intermediate blends)
-                        return `conic-gradient(
-                          from 0deg at 50% 50%,
-                          ${c1} 0deg, ${c1} 30deg,
-                          ${c2} 30deg, ${c2} 60deg,
-                          ${c3} 60deg, ${c3} 90deg,
-                          ${c1} 90deg, ${c1} 120deg,
-                          ${c2} 120deg, ${c2} 150deg,
-                          ${c3} 150deg, ${c3} 180deg,
-                          ${c1} 180deg, ${c1} 210deg,
-                          ${c2} 210deg, ${c2} 240deg,
-                          ${c3} 240deg, ${c3} 270deg,
-                          ${c1} 270deg, ${c1} 300deg,
-                          ${c2} 300deg, ${c2} 330deg,
-                          ${c3} 330deg, ${c3} 360deg
-                        )`;
+                        // Layered radial gradients create soft cloud-like effect
+                        return `
+                          radial-gradient(ellipse at 20% 30%, ${c1} 0%, transparent 50%),
+                          radial-gradient(ellipse at 80% 40%, ${c2} 0%, transparent 50%),
+                          radial-gradient(ellipse at 40% 80%, ${c3} 0%, transparent 50%),
+                          radial-gradient(ellipse at 70% 20%, ${c1} 0%, transparent 40%),
+                          radial-gradient(ellipse at 30% 60%, ${c2} 0%, transparent 40%),
+                          radial-gradient(ellipse at 60% 70%, ${c3} 0%, transparent 40%),
+                          linear-gradient(135deg, ${c1} 0%, ${c2} 50%, ${c3} 100%)
+                        `;
                       })(),
                       boxSizing: 'border-box',
                       position: 'relative',
